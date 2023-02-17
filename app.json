@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "BandRateSmart",
+    "slug": "BandRateSmart",
+    "version": "8.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/android_logotwo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/images/cover_img.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.JustCode.BandRateSmart",
+      "buildNumber": "8.0.0"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.JustCode.BandRateSmart",
+      "versionCode": 8,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "description": "",
+    "extra": {
+      "eas": {
+        "projectId": "53dd88ce-9ec4-4417-83db-7e3a74432bce"
+      }
+    }
+  }
+}

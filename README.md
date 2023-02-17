@@ -1,1 +1,1 @@
-# BandRateSmartApp_GITHUB
+# BandRateSmartApp

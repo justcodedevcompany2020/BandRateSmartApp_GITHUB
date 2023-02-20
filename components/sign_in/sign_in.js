@@ -82,7 +82,7 @@ export default class App extends Component {
 
             try {
                 fetch(`http://37.230.116.113/BandRate-Smart/public/api/login`, {
-                    method: 'post',
+                    method: 'POST',
                     headers: {
 
                         'Accept': 'application/json',
@@ -212,9 +212,6 @@ export default class App extends Component {
                         });
 
                     }
-
-
-
 
                     //   console.log(response)
                 })

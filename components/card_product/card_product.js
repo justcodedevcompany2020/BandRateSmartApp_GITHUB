@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Svg, { Path, Rect, Circle, Defs, Stop, ClipPath, G } from "react-native-svg";
 // import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { SliderBox } from "react-native-image-slider-box";
+// import { SliderBox } from "react-native-image-slider-box";
 import { StatusBar } from 'expo-status-bar';
-import { ImageSlider } from "react-native-image-slider-banner";
+// import { ImageSlider } from "react-native-image-slider-banner";
 
 import {
     Text,
@@ -57,6 +57,7 @@ export default class App extends Component {
             favourites_products_count: 0,
 
             position: 1,
+            active_slider_index: 0
 
         };
 
@@ -139,11 +140,11 @@ export default class App extends Component {
                 let slider_images = [];
 
                 for (let i = 0; i < pictures.length ; i++) {
-                    if (Platform.OS === "ios") {
+                    // if (Platform.OS === "ios") {
                         slider_images.push(pictures[i].picture)
-                    } else {
-                        slider_images.push({img:pictures[i].picture})
-                    }
+                    // } else {
+                    //     slider_images.push({img:pictures[i].picture})
+                    // }
 
                 }
 
@@ -198,11 +199,11 @@ export default class App extends Component {
 
 
                 for (let i = 0; i < pictures.length ; i++) {
-                    if (Platform.OS === "ios") {
+                    // if (Platform.OS === "ios") {
                         slider_images.push(pictures[i].picture)
-                    } else {
-                        slider_images.push({img:pictures[i].picture})
-                    }
+                    // } else {
+                    //     slider_images.push({img:pictures[i].picture})
+                    // }
                 }
 
                 let product_params = response.data.oneproductsParams;
@@ -630,6 +631,56 @@ export default class App extends Component {
     }
 
 
+    getActiveSliderImage = () =>
+    {
+        let {slider_images, active_slider_index} = this.state;
+        let url = slider_images[0];
+
+        if (active_slider_index > slider_images.length -1 )
+        {
+            url = slider_images[0];
+        } else {
+            url = slider_images[active_slider_index];
+        }
+
+        return url;
+    }
+
+
+    prevSlide = () =>
+    {
+        let {slider_images, active_slider_index} = this.state;
+        let new_active_slider_index;
+
+        if (active_slider_index == 0)
+        {
+            new_active_slider_index = slider_images.length -1
+        } else {
+            new_active_slider_index = active_slider_index - 1;
+        }
+
+        this.setState({
+            active_slider_index: new_active_slider_index
+        })
+    }
+
+    nextSlide = () =>
+    {
+        let {slider_images, active_slider_index} = this.state;
+        let new_active_slider_index;
+
+        if (active_slider_index > slider_images.length -1 )
+        {
+            new_active_slider_index = 0
+        } else {
+            new_active_slider_index = active_slider_index + 1;
+        }
+
+        this.setState({
+            active_slider_index: new_active_slider_index
+        })
+    }
+
 
     render() {
         if (!this.state.loaded) {
@@ -708,62 +759,78 @@ export default class App extends Component {
 
                         {Platform.OS === "ios" &&
                            <View style={[styles.slider_box]}>
-                            <SliderBox
-                                dotStyle={{
-                                    width:20,
-                                    height:20,
-                                    borderRadius:100,
-                                    backgroundColor:'#A5A5A5',
-                                    marginHorizontal:0,
-                                    padding: 0,
-                                    margin: 0,
-                                    position: "absolute",
-                                    bottom: -30,
-                                }}
-                                style={styles.slider_images}
-                                inactiveDotColor="#A5A5A5"
-                                dotColor="#D0251D"
-                                sliderBoxHeight={200}
-                                circleLoop={true}
-                                resizeMode={"contain"}
-                                resizeMethod={'resize'}
-                                ImageComponentStyle={{height: '50%', width: '30%', justifyContent: 'center', alignSelf: 'center'}}
+                            {/*<SliderBox*/}
+                            {/*    dotStyle={{*/}
+                            {/*        width:20,*/}
+                            {/*        height:20,*/}
+                            {/*        borderRadius:100,*/}
+                            {/*        backgroundColor:'#A5A5A5',*/}
+                            {/*        marginHorizontal:0,*/}
+                            {/*        padding: 0,*/}
+                            {/*        margin: 0,*/}
+                            {/*        position: "absolute",*/}
+                            {/*        bottom: -30,*/}
+                            {/*    }}*/}
+                            {/*    style={styles.slider_images}*/}
+                            {/*    inactiveDotColor="#A5A5A5"*/}
+                            {/*    dotColor="#D0251D"*/}
+                            {/*    sliderBoxHeight={200}*/}
+                            {/*    circleLoop={true}*/}
+                            {/*    resizeMode={"contain"}*/}
+                            {/*    resizeMethod={'resize'}*/}
+                            {/*    ImageComponentStyle={{height: '50%', width: '30%', justifyContent: 'center', alignSelf: 'center'}}*/}
 
 
-                                // paginationBoxStyle={{
-                                //     alignItems: "center",
-                                //     alignSelf: "center",
-                                //     justifyContent: "center",
-                                //     paddingVertical: 10,
-                                //     backgroundColor:"#00000099",
-                                //     display: "block",
-                                // }}
-                                images={this.sliderImages()}
-                                onCurrentImagePressed={index => console.log(index)}
-                                currentImageEmitter={index => this.setState({current_image: index+1})}
-                            />
+                            {/*    // paginationBoxStyle={{*/}
+                            {/*    //     alignItems: "center",*/}
+                            {/*    //     alignSelf: "center",*/}
+                            {/*    //     justifyContent: "center",*/}
+                            {/*    //     paddingVertical: 10,*/}
+                            {/*    //     backgroundColor:"#00000099",*/}
+                            {/*    //     display: "block",*/}
+                            {/*    // }}*/}
+                            {/*    images={this.sliderImages()}*/}
+                            {/*    onCurrentImagePressed={index => console.log(index)}*/}
+                            {/*    currentImageEmitter={index => this.setState({current_image: index+1})}*/}
+                            {/*/>*/}
                         </View>
 
                         }
 
+                        <View style={[styles.slider_box, {height: 250}]}>
 
-                        {Platform.OS !== "ios" &&
+                            {this.state.slider_images.length > 0 &&
 
-                           <View style={[styles.slider_box, {height: 250}]}>
-                               <ImageSlider
-                                   data={this.state.slider_images}
-                                   autoPlay={false}
-                                   onItemChanged={(item) => console.log("item", item)}
-                                   closeIconColor="#fff"
-                                   caroselImageStyle={{height: 250,  resizeMode: 'cover'}}
-                                   previewImageStyle={{ resizeMode: 'contain'}}
-                                   // caroselImageContainerStyle={{height: 250, }}
-                                   activeIndicatorStyle={{backgroundColor: "#D0251D"}}
-                                   inActiveIndicatorStyle={{backgroundColor: '#A5A5A5'}}
-                               />
-                           </View>
+                                   <View style={{width:'100%', backgroundColor:'black'}}>
+                                       <TouchableOpacity
+                                           style={{width: 50, height:50, position:'absolute', top:100, left:10, zIndex:9999}}
+                                           onPress={() => {
+                                               this.prevSlide()
+                                           }}
+                                       >
+                                           <Svg fill="#fff" width={50} height={50} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" className="icon">
+                                               <Path d="M768 903.232L717.568 960 256 512 717.568 64 768 120.768 364.928 512z" />
+                                           </Svg>
+                                       </TouchableOpacity>
 
-                        }
+                                       <Image style={{width:'100%', height:'100%', resizeMode:'contain'}} source={{uri: this.getActiveSliderImage()}} />
+
+
+                                       <TouchableOpacity
+                                           style={{width: 50, height:50, position:'absolute', top:100, right: 10, zIndex:9999}}
+                                           onPress={() => {
+                                               this.nextSlide()
+                                           }}
+                                       >
+                                           <Svg fill="#fff" width={50} height={50} xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 1024 1024" className="icon">
+                                               <Path d="M256 120.768L306.432 64 768 512 306.432 960 256 903.232 659.072 512z" />
+                                           </Svg>
+                                       </TouchableOpacity>
+
+
+                                   </View>
+                            }
+                        </View>
 
                     </View>
 

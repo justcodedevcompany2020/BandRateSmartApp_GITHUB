@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import Svg, { Path, Rect, Circle, Defs, Stop, ClipPath, G } from "react-native-svg";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-// import { SliderBox } from "react-native-image-slider-box";
-import { BlurView } from 'expo-blur';
 import {StatusBar} from "expo-status-bar";
 
 

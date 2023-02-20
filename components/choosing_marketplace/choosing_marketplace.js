@@ -3,7 +3,7 @@ import Svg, { Path, Rect, Circle, Defs, Stop, ClipPath, G } from "react-native-s
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 // import { SliderBox } from "react-native-image-slider-box";
 import {StatusBar} from "expo-status-bar"
-import { BlurView } from 'expo-blur';
+// import { BlurView } from 'expo-blur';
 
 
 

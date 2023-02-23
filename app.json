@@ -20,7 +20,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.JustCode.BandRateSmart",
-      "buildNumber": "8.0.0"
+      "buildNumber": "8.0.0",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -29,6 +34,8 @@
       },
       "package": "com.JustCode.BandRateSmart",
       "versionCode": 8,
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE"

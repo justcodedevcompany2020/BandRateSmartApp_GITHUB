@@ -497,6 +497,7 @@ export default class App extends Component {
                     }
 
                     {this.state.instructions_data.map((item, index) => {
+
                         return (
 
                             <View style={styles.favorites_products_item} key={index}>
@@ -505,7 +506,6 @@ export default class App extends Component {
 
                                 <TouchableOpacity onPress={() => {
                                     this.openInstrUrl(item)
-
                                 }}>
                                     <Text style={{color: 'blue'}}>Скачать инструкцию</Text>
                                 </TouchableOpacity>

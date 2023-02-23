@@ -25,6 +25,8 @@ import {
     useSafeAreaInsets,
     initialWindowMetrics,
 } from 'react-native-safe-area-context';
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
 
 export default class App extends Component {
     constructor(props) {
@@ -92,9 +94,30 @@ export default class App extends Component {
         this.props.navigation.navigate("Dashboard");
 
     }
-    signUpHandler = () => {
-        let {name, email, phone, password, repeatPassword, selectedPhoneCode } = this.state;
+    registerForPushNotificationsAsync = async () => {
+        try {
+            const { status: existingStatus } = await Notifications.getPermissionsAsync()
+            let finalStatus = existingStatus
+            if (existingStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync()
+                finalStatus = status
+            }
+            if (finalStatus !== 'granted') {
+                throw new Error('Permission not granted!')
+            }
+            const token = (await Notifications.getExpoPushTokenAsync({experienceId: "@a200796a/BandRateSmart"})).data;
 
+            return token
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    signUpHandler = async () => {
+        let {name, email, phone, password, repeatPassword, selectedPhoneCode } = this.state;
+        let push_ident = Device.isDevice ?  await this.registerForPushNotificationsAsync() : 'f65f1f1232f123e51f35ef1we35f1we351fw35';
+
+        console.log(push_ident, 'push_ident')
 
         try {
             fetch(`http://37.230.116.113/BandRate-Smart/public/api/register`, {
@@ -111,6 +134,8 @@ export default class App extends Component {
                     password: password,
                     password_confirmation: repeatPassword,
                     I_agree: true,
+                    push_ident: push_ident
+
                 })
             }).then((response) => {
                 return response.json()

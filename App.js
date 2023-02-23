@@ -207,7 +207,7 @@ function WristWatchCatalogComponentScreen ({ navigation }) {
 
 
 export default function App() {
-
+     // AsyncStorage.clear()
     const popAction = StackActions.pop(1);
 
     const [isLoading, setIsLoading] = React.useState(true);

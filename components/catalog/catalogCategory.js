@@ -267,19 +267,24 @@ export default class App extends Component {
 
 
             sort_by_additional_functions: [],
+            catalog_cats:[
+                {name: 'Умные часы', redirect_to: 'Catalog', image: require('../../assets/umnie.jpg') },
+                {name: 'Наручные часы', redirect_to: 'WristWatchCatalogComponent', image: require('../../assets/naruchniechasy.jpg') },
+                {name: 'Алкотестеры', redirect_to: null, image: null },
 
-
-
-
+                {name: 'Видеорегистраторы', redirect_to: null, image: null },
+                {name: 'Беспроводные наушники', redirect_to: null, image: null },
+                {name: 'Пульсометры', redirect_to: null, image: null },
+                {name: 'Увлажнители', redirect_to: null, image: null },
+                {name: 'Электронные термометры', redirect_to: null, image: null },
+                {name: 'Bluetooth гарнитуры', redirect_to: null, image: null },
+            ]
         };
 
 
         this.Star = require('../../assets/images/star_rating_image.png');
         this.Star_With_Border = require('../../assets/images/star_not_rating_img.png');
     }
-
-
-
 
 
     UpdateRating = async (key) =>  {
@@ -424,22 +429,12 @@ export default class App extends Component {
                     }
                 }
 
-
-
-
-
-
-
             })
     }
-
-
 
     sendReview = () => {
         this.setState({ pressed: true, pressed2: false, pressed3: false, pressed4: false});
     }
-
-
 
     getCatalogData = async () => {
         // AsyncStorage.removeItem('haveAlreadyShownStarPopup');
@@ -488,8 +483,6 @@ export default class App extends Component {
 
     }
 
-
-
     findInArray = (array, find) => {
 
 
@@ -509,8 +502,6 @@ export default class App extends Component {
         return array;
 
     }
-
-
 
     componentDidMount() {
         const { navigation } = this.props;
@@ -769,13 +760,6 @@ export default class App extends Component {
              makeReviewSuccessPopup: false,
          })
     }
-
-
-
-
-
-
-
 
     sendReviewOnlineShopUrl = async () => {
         let userToken = await AsyncStorage.getItem('userToken');
@@ -1118,42 +1102,41 @@ export default class App extends Component {
                 </View>
 
 
-                <ScrollView style={[styles.catalog_items_main_wrapper, {backgroundColor:'white'}]}>
+                <ScrollView style={[styles.catalog_items_main_wrapper, {backgroundColor:'white', paddingBottom: 15}]}>
 
 
-                    <TouchableOpacity
-                        style={{width: '100%', height: 150, borderRadius: 20, borderColor:'silver', borderWidth:1, marginBottom: 15, padding: 15, flexDirection:'row', justifyContent:'center', alignItems:'center'}}
-                        onPress={() => {
-                            this.props.navigation.navigate('Catalog')
-                        }}
-                    >
+                    {this.state.catalog_cats.map((item, index) => {
+                        return (
 
-                        <Text style={{fontSize: 18, fontWeight:'bold'}}>
-                            Умные часы
-                        </Text>
+                            <TouchableOpacity
+                                key={index}
+                                style={{width: '100%', height: 150, borderRadius: 20, borderColor:'silver', borderWidth:1, marginBottom: 25, padding: 15, flexDirection:'row', justifyContent:'center', alignItems:'center'}}
+                                onPress={() => {
+                                    if(item.redirect_to)
+                                    {
+                                        this.props.navigation.navigate(item.redirect_to)
+                                    }
+                                }}
+                            >
 
-                        <View style={{flex:1, height: '100%', flexDirection:'row', justifyContent:'center'}}>
-                            <Image style={{width: 100, height: '100%'}} source={require('../../assets/umnie.jpg')}/>
-                        </View>
+                                <Text style={{fontSize: 18, fontWeight:'bold'}}>
+                                    {item.name}
+                                </Text>
 
-                    </TouchableOpacity>
+                                <View style={{flex:1, height: '100%', flexDirection:'row', justifyContent:'center'}}>
 
-                    <TouchableOpacity
-                        style={{width: '100%', height: 150, borderRadius: 20, borderColor:'silver', borderWidth:1, marginBottom: 15, padding: 15, flexDirection:'row', justifyContent:'center', alignItems:'center'}}
-                        onPress={() => {
-                            this.props.navigation.navigate('WristWatchCatalogComponent')
-                        }}
-                    >
+                                    {item.image &&
+                                        <Image style={{width: 100, height: '100%'}} source={item.image}/>
+                                    }
+                                </View>
 
-                        <Text style={{fontSize: 18, fontWeight:'bold'}}>
-                            Наручные часы
-                        </Text>
+                            </TouchableOpacity>
 
-                        <View style={{flex:1, height: '100%', flexDirection:'row', justifyContent:'center'}}>
-                            <Image style={{width: 80, height: '100%'}} source={require('../../assets/naruchniechasy.jpg')}/>
-                        </View>
 
-                    </TouchableOpacity>
+                        )
+                    })}
+
+
 
 
                 </ScrollView>

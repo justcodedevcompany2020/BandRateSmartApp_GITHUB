@@ -1290,6 +1290,42 @@ export default class App extends Component {
 
     }
 
+
+    removeAccountHandler = async ()=>
+    {
+
+        let userToken = await AsyncStorage.getItem('userToken');
+        let AuthStr = 'Bearer ' + userToken;
+
+        fetch(
+            'http://37.230.116.113/BandRate-Smart/public/api/DeleteMyAccount',
+            {
+                method: "POST",
+                headers: {
+                    'Authorization': AuthStr,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            }
+        ).then((response) => response.json())
+            .catch((error) => {
+                console.log("ERROR " , error)
+            })
+            .then((response) => {
+                console.log(response, "product_count_ggggg");
+
+                this.setState({showSettingsModal: false})
+
+                this.context.signOut(() => {
+                    this.props.navigation.navigate('SignIn')
+                }).then(r => console.log("logOut"));
+
+
+            })
+
+
+    }
+
     render() {
 
 
@@ -1741,11 +1777,8 @@ export default class App extends Component {
                                           style={{flex:1, padding:5, alignItems: 'center', justifyContent: 'center', height: 50}}
                                           onPress={() => {
 
-                                              this.context.signOut(() => {
-                                                  this.props.navigation.navigate('SignIn')
-                                              }).then(r => console.log("logOut"));
+                                             this.removeAccountHandler()
 
-                                              this.setState({showSettingsModal: false})
                                           }
                                       }>
                                             <Text>Удалить</Text>

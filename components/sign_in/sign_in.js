@@ -3,7 +3,8 @@ import Svg, { Path, Rect, Circle, Defs, Stop, ClipPath, G } from "react-native-s
 // import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StatusBar } from 'expo-status-bar';
 import {AuthContext} from "../AuthContext/context";
-
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 
 import {
     Text,
@@ -28,6 +29,15 @@ import {
 } from 'react-native-safe-area-context';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false
+    })
+});
 
 export default class App extends Component {
     constructor(props) {
@@ -77,8 +87,30 @@ export default class App extends Component {
     // }
     //
 
+    registerForPushNotificationsAsync = async () => {
+        try {
+            const { status: existingStatus } = await Notifications.getPermissionsAsync()
+            let finalStatus = existingStatus
+            if (existingStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync()
+                finalStatus = status
+            }
+            if (finalStatus !== 'granted') {
+                throw new Error('Permission not granted!')
+            }
+            const token = (await Notifications.getExpoPushTokenAsync({experienceId: "@a200796a/BandRateSmart"})).data;
+
+            return token
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     signInHandler = async () => {
         let {email, password, privacy_policy} = this.state;
+        let push_ident = Device.isDevice ?  await this.registerForPushNotificationsAsync() : 'f65f1f1232f123e51f35ef1we35f1we351fw35';
+
+        console.log(push_ident, 'push_ident')
 
             try {
                 fetch(`http://37.230.116.113/BandRate-Smart/public/api/login`, {
@@ -91,6 +123,7 @@ export default class App extends Component {
                     body: JSON.stringify({
                         email: email,
                         password: password,
+                        push_ident: push_ident
                     })
                 }).then((response) => {
                     return response.json()

@@ -31,6 +31,7 @@ import {
 
 } from 'react-native-safe-area-context';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as WebBrowser from "expo-web-browser";
 
 export default class App extends Component {
     constructor(props) {
@@ -57,7 +58,8 @@ export default class App extends Component {
             favourites_products_count: 0,
 
             position: 1,
-            active_slider_index: 0
+            active_slider_index: 0,
+            instructions_data: []
 
         };
 
@@ -188,10 +190,10 @@ export default class App extends Component {
             .catch((error) => {
                 console.log("ERROR " , error)
             })
-            .then((response) => {
+            .then( async (response) => {
 
-                console.log(response, "response.data.oneproducts.product_image");
-                console.log(response.data.oneproductsParams, "response.data.oneproductsParams");
+                // console.log(response, "response.data.oneproducts.product_image");
+                // console.log(response.data.oneproductsParams, "response.data.oneproductsParams");
 
 
                 let pictures = response.data.oneproducts[0].product_image;
@@ -199,18 +201,12 @@ export default class App extends Component {
 
 
                 for (let i = 0; i < pictures.length ; i++) {
-                    // if (Platform.OS === "ios") {
-                        slider_images.push(pictures[i].picture)
-                    // } else {
-                    //     slider_images.push({img:pictures[i].picture})
-                    // }
+                    slider_images.push(pictures[i].picture)
                 }
 
                 let product_params = response.data.oneproductsParams;
                 let new_product_params = {}
                 let minimum_product_params = {}
-
-                // console.log(product_params, "one_product_params")
 
                 for (let i = 0; i < product_params.length ; i++) {
                     for (let prop in product_params[i]) {
@@ -227,9 +223,10 @@ export default class App extends Component {
                     }
                 }
 
+
                 // console.log(response.data.oneproducts, 'response.data.oneproducts')
 
-                this.setState({
+                await this.setState({
                     single_product_info: response.data.oneproducts[0],
                     similar_products: response.data.randomproducts,
                     slider_images: slider_images,
@@ -239,9 +236,47 @@ export default class App extends Component {
                     favourite_product_heart: response.data.favorit_product,
                 })
 
+                await this.getSearchResult(response.data.oneproducts[0].model)
 
             })
 
+
+    }
+
+
+    getSearchResult = async (searchValue) => {
+
+        let clock_code = searchValue.split(' ');
+        clock_code = clock_code[clock_code.length-1];
+        // clock_code = 'BR';
+
+        let userToken = await AsyncStorage.getItem('userToken');
+        let AuthStr = 'Bearer ' + userToken;
+
+        console.log(`http://37.230.116.113/BandRate-Smart/public/api/getModal?page=1&search=${clock_code}`)
+        fetch(
+            `http://37.230.116.113/BandRate-Smart/public/api/getModal?page=1&search=${clock_code}`,
+            {
+                method: "GET",
+                headers: {
+                    'Authorization': AuthStr,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            }
+        ).then((response) => response.json())
+            .catch((error) => {
+                console.log("ERROR " , error)
+
+            })
+            .then((response) => {
+                let all_instructions_data = response.data.data;
+                console.log(response.data, 'all_instructions_data');
+                this.setState({
+                    instructions_data: all_instructions_data,
+                })
+
+            })
 
     }
 
@@ -316,7 +351,7 @@ export default class App extends Component {
             })
             .then((response) => {
 
-                console.log(response, "favourites_product_count_ggggg");
+                // console.log(response, "favourites_product_count_ggggg");
 
                 if (response.hasOwnProperty("status")) {
                     if (response.status === true) {
@@ -348,14 +383,14 @@ export default class App extends Component {
         this.getProductInfo();
         this.checkBasketCount();
         this.checkFavouritesProductsCount();
-        console.log(this.props.prev_page, 'this.props.prev_page')
+        // console.log(this.props.prev_page, 'this.props.prev_page')
 
         this.focusListener = navigation.addListener("focus", () => {
             this.getProductInfo();
             this.checkBasketCount();
             this.checkFavouritesProductsCount();
 
-            console.log(this.props.prev_page, 'this.props.prev_page')
+            // console.log(this.props.prev_page, 'this.props.prev_page')
 
         });
     }
@@ -584,38 +619,7 @@ export default class App extends Component {
                         this.setState({
                             show_add_to_basket_notification: true,
                         })
-
                         this.checkBasketCount();
-
-                        // let countsOfProductsInBasket    =  AsyncStorage.getItem('countsOfProductsInBasket');
-
-
-                        // AsyncStorage.getItem('countsOfProductsInBasket',(err,item) => {
-                        //
-                        //     let countsOfProductsInBasket = item ? JSON.parse(item) : '0'
-                        //
-                        //     let newCountsOfProductsInBasket = '';
-                        //     if (countsOfProductsInBasket != '0') {
-                        //
-                        //         newCountsOfProductsInBasket = countsOfProductsInBasket + 1
-                        //         newCountsOfProductsInBasket = JSON.stringify(newCountsOfProductsInBasket)
-                        //
-                        //     } else {
-                        //         newCountsOfProductsInBasket = '1';
-                        //     }
-                        //
-                        //     this.setState({
-                        //         show_basket_count: true,
-                        //         basket_count: newCountsOfProductsInBasket
-                        //     })
-                        //
-                        //     AsyncStorage.setItem('countsOfProductsInBasket', newCountsOfProductsInBasket);
-                        //
-                        // })
-
-
-
-
                         setTimeout(() => {
                             this.setState({
                                 show_add_to_basket_notification: false,
@@ -678,6 +682,17 @@ export default class App extends Component {
 
         this.setState({
             active_slider_index: new_active_slider_index
+        })
+    }
+
+
+    openInstrUrl = async  (item) =>{
+        await this.setState({
+            loaded: false
+        })
+        WebBrowser.openBrowserAsync(item.url)
+        await this.setState({
+            loaded: true
         })
     }
 
@@ -954,7 +969,55 @@ export default class App extends Component {
                             {/*        </Svg>*/}
                             {/*    </View>*/}
                             {/*</TouchableOpacity>*/}
+
                         </View>
+
+
+
+                        {this.state.instructions_data.length > 0 &&
+
+                            <View style={styles.favorites_products_item} >
+
+                                {/*<Text style={{fontWeight:'bold', fontSize: 20, width: '45%'}}>{item.name}</Text>*/}
+
+                                <TouchableOpacity
+                                    style={[styles.add_to_card_button, {width: 250, alignSelf: 'center'}]}
+                                    onPress={() =>{
+                                        this.openInstrUrl(this.state.instructions_data[0])
+                                    }}
+                                >
+                                    <Text style={styles.add_to_card_button_text}>Скачать инструкцию</Text>
+                                </TouchableOpacity>
+
+                            </View>
+
+
+                        }
+
+                        {/*{this.state.instructions_data.map((item, index) => {*/}
+
+                        {/*    return (*/}
+
+                        {/*        <View style={styles.favorites_products_item} key={index}>*/}
+
+                        {/*            /!*<Text style={{fontWeight:'bold', fontSize: 20, width: '45%'}}>{item.name}</Text>*!/*/}
+
+                        {/*            <TouchableOpacity*/}
+                        {/*                style={[styles.add_to_card_button, {width: 250, alignSelf: 'center'}]}*/}
+                        {/*                onPress={() =>{*/}
+                        {/*                    this.openInstrUrl(item)*/}
+                        {/*                }}*/}
+                        {/*            >*/}
+                        {/*                <Text style={styles.add_to_card_button_text}>Скачать инструкцию</Text>*/}
+                        {/*            </TouchableOpacity>*/}
+
+                        {/*        </View>*/}
+
+                        {/*    );*/}
+                        {/*})}*/}
+
+
+
                         <View style={styles.similar_products_items_title_wrapper}>
                             <Text style={styles.similar_products_items_title}>Похожые товары</Text>
                             <ScrollView style={styles.similar_products_items_wrapper} horizontal={true}>

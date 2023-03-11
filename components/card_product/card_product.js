@@ -59,7 +59,8 @@ export default class App extends Component {
 
             position: 1,
             active_slider_index: 0,
-            instructions_data: []
+            instructions_data: [],
+            category_id: null
 
         };
 
@@ -81,7 +82,8 @@ export default class App extends Component {
 
     backToPrevPage = () => {
         // this.props.navigation.navigate("Catalog");
-        this.props.navigation.navigate(this.props.prev_page);
+        // this.props.navigation.navigate(this.props.prev_page);
+        this.props.navigation.goBack();
     }
 
     sliderImages = () => {
@@ -172,8 +174,8 @@ export default class App extends Component {
         let product_info = JSON.parse(this.props.info);
         let product_id = product_info.product_id;
 
-        console.log(userToken)
-        console.log('http://37.230.116.113/BandRate-Smart/public/api/CatalogOneProduct/product_id='+product_id)
+        // console.log(userToken)
+        // console.log('http://37.230.116.113/BandRate-Smart/public/api/CatalogOneProduct/product_id='+product_id)
 
         fetch(
             'http://37.230.116.113/BandRate-Smart/public/api/CatalogOneProduct/product_id='+product_id,
@@ -192,13 +194,12 @@ export default class App extends Component {
             })
             .then( async (response) => {
 
-                // console.log(response, "response.data.oneproducts.product_image");
+                console.log(response.data.oneproducts[0].category.category_id, "getProductInfo getProductInfo");
                 // console.log(response.data.oneproductsParams, "response.data.oneproductsParams");
 
 
                 let pictures = response.data.oneproducts[0].product_image;
                 let slider_images = [];
-
 
                 for (let i = 0; i < pictures.length ; i++) {
                     slider_images.push(pictures[i].picture)
@@ -234,6 +235,7 @@ export default class App extends Component {
                     minimum_product_params: minimum_product_params,
                     loaded: true,
                     favourite_product_heart: response.data.favorit_product,
+                    category_id: response.data.oneproducts[0].category.category_id
                 })
 
                 await this.getSearchResult(response.data.oneproducts[0].model)
@@ -271,7 +273,7 @@ export default class App extends Component {
             })
             .then((response) => {
                 let all_instructions_data = response.data.data;
-                console.log(response.data, 'all_instructions_data');
+                // console.log(response.data, 'all_instructions_data');
                 this.setState({
                     instructions_data: all_instructions_data,
                 })
@@ -743,25 +745,12 @@ export default class App extends Component {
 
                     {!this.state.favourite_product_heart &&
 
-                    <TouchableOpacity style={styles.card_product_favorites_btn} onPress={() => {this.addToFavouritesList()}}>
-                        <Svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width={30}
-                            height={26}
-                            viewBox="0 0 30 26"
-                            fill="none"
-                        >
-                            <Path
-                                d="M8.333 1C4.652 1 1.666 3.955 1.666 7.6c0 2.943 1.167 9.927 12.651 16.987a1.314 1.314 0 001.365 0C27.166 17.527 28.334 10.543 28.334 7.6c0-3.645-2.985-6.6-6.666-6.6C17.985 1 15 5 15 5s-2.986-4-6.667-4z"
-                                stroke="#D0251D"
-                                strokeWidth={2}
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </Svg>
+                        <TouchableOpacity style={styles.card_product_favorites_btn} onPress={() => {this.addToFavouritesList()}}>
+                            <Svg xmlns="http://www.w3.org/2000/svg" width={30} height={26} viewBox="0 0 30 26" fill="none">
+                                <Path d="M8.333 1C4.652 1 1.666 3.955 1.666 7.6c0 2.943 1.167 9.927 12.651 16.987a1.314 1.314 0 001.365 0C27.166 17.527 28.334 10.543 28.334 7.6c0-3.645-2.985-6.6-6.666-6.6C17.985 1 15 5 15 5s-2.986-4-6.667-4z" stroke="#D0251D" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"/>
+                            </Svg>
 
-                    </TouchableOpacity>
-
+                        </TouchableOpacity>
 
                     }
 
@@ -770,47 +759,6 @@ export default class App extends Component {
 
                 <ScrollView style={styles.card_product_main_wrapper}>
                     <View style={styles.card_product_header_slider_box}>
-
-
-                        {Platform.OS === "ios" &&
-                           <View style={[styles.slider_box]}>
-                            {/*<SliderBox*/}
-                            {/*    dotStyle={{*/}
-                            {/*        width:20,*/}
-                            {/*        height:20,*/}
-                            {/*        borderRadius:100,*/}
-                            {/*        backgroundColor:'#A5A5A5',*/}
-                            {/*        marginHorizontal:0,*/}
-                            {/*        padding: 0,*/}
-                            {/*        margin: 0,*/}
-                            {/*        position: "absolute",*/}
-                            {/*        bottom: -30,*/}
-                            {/*    }}*/}
-                            {/*    style={styles.slider_images}*/}
-                            {/*    inactiveDotColor="#A5A5A5"*/}
-                            {/*    dotColor="#D0251D"*/}
-                            {/*    sliderBoxHeight={200}*/}
-                            {/*    circleLoop={true}*/}
-                            {/*    resizeMode={"contain"}*/}
-                            {/*    resizeMethod={'resize'}*/}
-                            {/*    ImageComponentStyle={{height: '50%', width: '30%', justifyContent: 'center', alignSelf: 'center'}}*/}
-
-
-                            {/*    // paginationBoxStyle={{*/}
-                            {/*    //     alignItems: "center",*/}
-                            {/*    //     alignSelf: "center",*/}
-                            {/*    //     justifyContent: "center",*/}
-                            {/*    //     paddingVertical: 10,*/}
-                            {/*    //     backgroundColor:"#00000099",*/}
-                            {/*    //     display: "block",*/}
-                            {/*    // }}*/}
-                            {/*    images={this.sliderImages()}*/}
-                            {/*    onCurrentImagePressed={index => console.log(index)}*/}
-                            {/*    currentImageEmitter={index => this.setState({current_image: index+1})}*/}
-                            {/*/>*/}
-                        </View>
-
-                        }
 
                         <View style={[styles.slider_box, {height: 250}]}>
 
@@ -892,7 +840,7 @@ export default class App extends Component {
 
                             <View style={{}}>
                                 {Object.entries(this.state.product_params).map((key, index) => {
-                                    console.log(key, 'ddwedw')
+                                    // console.log(key, 'ddwedw')
                                     if(key[0] == 'Особенности'  || key[0] == 'Дополнительные функции' ) {
                                         return null
                                     } else {
@@ -1098,6 +1046,23 @@ export default class App extends Component {
                     <TouchableOpacity style={[styles.add_to_card_button, {position:'absolute',  left: 20, right: 0, top: -60}]} onPress={() =>{this.addToBasket()}}>
                         <Text style={styles.add_to_card_button_text}>В корзину</Text>
                     </TouchableOpacity>
+
+
+                    {this.state.category_id && this.state.category_id == 1089000 &&
+
+                        <TouchableOpacity
+                            style={[styles.add_to_card_button, {position:'absolute',  backgroundColor:'#153364', maxWidth:200, width: '100%', right: 20, top: -60}]}
+                            onPress={() =>{
+
+                                this.props.navigation.navigate('ThemesCatalogComponent')
+
+                            }}
+                        >
+                            <Text style={styles.add_to_card_button_text}>Темы на циферблат</Text>
+                        </TouchableOpacity>
+
+                    }
+
 
                     <TouchableOpacity style={[styles.footer_page_btn, {flexDirection: 'row', position: "relative",}]} onPress={() => this.redirectToFavorites()}>
                         <Svg xmlns="http://www.w3.org/2000/svg" width={28} height={26} viewBox="0 0 28 26" fill="none">

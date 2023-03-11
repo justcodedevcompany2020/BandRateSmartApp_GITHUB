@@ -368,6 +368,12 @@ export default class App extends Component {
     }
 
 
+    redirectToThemes = () => {
+        this.setState({ pressed: true, pressed2: false, pressed3: false, pressed4: false});
+        this.props.navigation.navigate("ThemesCatalogComponent");
+    }
+
+
 
     writeReviewForBonus = () => {
 
@@ -2656,6 +2662,13 @@ export default class App extends Component {
                     </View>
 
                     <View style={styles.personal_area_buttons_main_wrapper}>
+
+                        <TouchableOpacity style={[styles.personal_area_button, {backgroundColor:this.state.pressed ? "#D0251D" : '#ffffff'}, {borderWidth:this.state.pressed ? 0 : 1}]}   onPress={()=>this.redirectToThemes()} >
+                            <Text style={[styles.personal_area_button_text, {color:this.state.pressed ? "#ffffff" : '#333333'}]}>
+                                Скачать темы
+                            </Text>
+                        </TouchableOpacity>
+
                         <TouchableOpacity style={[styles.personal_area_button, {backgroundColor:this.state.pressed ? "#D0251D" : '#ffffff'}, {borderWidth:this.state.pressed ? 0 : 1}]}   onPress={()=>this.redirectToAmbassador()} >
                             <Text style={[styles.personal_area_button_text, {color:this.state.pressed ? "#ffffff" : '#333333'}]}>
                                 Стать Амбасадором

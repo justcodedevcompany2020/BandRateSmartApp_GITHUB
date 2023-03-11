@@ -108,9 +108,14 @@ export default class App extends Component {
 
     signInHandler = async () => {
         let {email, password, privacy_policy} = this.state;
-        let push_ident = Device.isDevice ?  await this.registerForPushNotificationsAsync() : 'f65f1f1232f123e51f35ef1we35f1we351fw35';
+        let push_ident = Device.isDevice ?  await this.registerForPushNotificationsAsync() : 'f65f1f1232f123e51f35ef1we35f1we351fw35q';
 
-        console.log(push_ident, 'push_ident')
+        console.log(push_ident, 'push_ident',Device.isDevice)
+        console.log({
+            email: email,
+            password: password,
+            push_ident: push_ident
+        })
 
             try {
                 fetch(`http://37.230.116.113/BandRate-Smart/public/api/login`, {
@@ -249,7 +254,7 @@ export default class App extends Component {
                     //   console.log(response)
                 })
             } catch (e) {
-                console.log(e)
+                console.log('dwdwdw', e)
             }
 
 

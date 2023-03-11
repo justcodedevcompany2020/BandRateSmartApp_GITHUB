@@ -1,10 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import {Platform, StyleSheet, Text, View, Button} from 'react-native';
+
+import * as Linking from 'expo-linking';
+// const prefix = Linking.createURL('/');
 
 import * as React from 'react';
 import 'react-native-gesture-handler';
-import { NavigationContainer,StackActions } from '@react-navigation/native';
+import { NavigationContainer,StackActions,createNavigationContainerRef, LinkingOptions, useLinkTo } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
+const navigationRef = createNavigationContainerRef()
+
+function navigate_custom(name) {
+    if (navigationRef.isReady())
+    {
+        navigationRef.navigate(name);
+    }
+}
 
 
 import {AuthContext} from "./components/AuthContext/context";
@@ -38,6 +51,10 @@ import ProductSearchComponent from './components/product_search/product_search';
 import InstructionComponent from './components/InstructionComponent';
 import WristWatchCatalogComponent from './components/WristWatchCatalogComponent';
 import CatalogCategory from './components/catalog/catalogCategory';
+import ThemesCatalogComponent from './components/Themes/ThemesCatalogComponent';
+import ThemeSingleComponent from './components/Themes/ThemeSingleComponent';
+import CheckUserLoginOrNot from './components/Themes/CheckUserLoginOrNot';
+import {openURL} from "expo-linking";
 
 
 function DashboardScreen({ navigation }) {
@@ -134,6 +151,8 @@ function JobsScreen({route, navigation }) {
 }
 
 function CatalogCategoryScreen({ navigation }) {
+    // navigation.navigate('ThemesCatalogComponent')
+    // return false
     return (
         <CatalogCategory navigation={navigation}  />
     );
@@ -204,12 +223,33 @@ function WristWatchCatalogComponentScreen ({ navigation }) {
     );
 }
 
+function ThemesCatalogComponentScreen ({ navigation }) {
+    return (
+        <ThemesCatalogComponent navigation={navigation}  />
+    );
+}
+
+function ThemeSingleComponentScreen ({ route, navigation })
+{
+    const {theme} = route.params;
+    return (
+        <ThemeSingleComponent navigation={navigation} theme={theme}  />
+    );
+}
+
+function CheckUserLoginOrNotScreen ({ navigation })
+{
+    return (
+        <CheckUserLoginOrNot navigation={navigation} />
+    );
+}
+
 
 
 export default function App() {
+
      // AsyncStorage.clear()
     const popAction = StackActions.pop(1);
-
     const [isLoading, setIsLoading] = React.useState(true);
     const [userToken, setUserToken] = React.useState(null);
 
@@ -217,6 +257,7 @@ export default function App() {
         isLoading: true,
         userEmail: null,
         userToken: null,
+        url:null
     };
 
     const loginReducer = (prevState, action) => {
@@ -286,8 +327,58 @@ export default function App() {
         }
     }), []);
 
-
     // Проверка при входе в приложение.
+    // const prefix = Linking.createURL('/ThemesCatalogComponent');
+    // const linking = {
+    //     prefixes: [prefix],
+    // };
+
+
+
+
+
+
+
+    //
+
+
+
+    //
+    // if (Platform.OS === 'android') {
+    //     Linking.getInitialURL().then(url => {
+    //         console.log(url, 'android url')
+    //         navigate(url);
+    //     });
+    // } else {
+    //     Linking.addEventListener('url', handleOpenURL);
+    // }
+
+  //   const handleOpenURL = (event) => { // D
+  //       navigate(event.url);
+  //   }
+  //   const navigate = (url) => { // E
+  //
+  //       console.log(url, 'navigatenavigate')
+  //
+  //       // const { navigate } = this.props.navigation;
+  //       // const route = url.replace(/.*?:\/\//g, '');
+  //       // const id = route.match(/\/([^\/]+)\/?$/)[1];
+  //       // const routeName = route.split('/')[0];
+  //       // console.log(routeName, 'routeName')
+  //
+  //       url = url.split('//');
+  //       const routeName = url.length == 2 ? url[1] : null;
+  //
+  //       console.log(routeName, 'routeName')
+  //
+  //       if (routeName == 'records')
+  //       {
+  //           // navigation.navigate('ThemesCatalogComponent')
+  //           // Linking.openURL('ThemesCatalogComponent')
+  //           navigate_custom('ThemesCatalogComponent');
+  //       };
+  //   }
+  //
 
     React.useEffect(() => {
         setTimeout(async () => {
@@ -305,154 +396,411 @@ export default function App() {
             dispatch({type: 'RETRIEVE_TOKEN', token: userToken});
         }, 1000);
     }, []);
+
+    const linking = {
+        prefixes: ['bandratesmart://'],
+        config: {
+            screens: {
+                CatalogCategory:"CatalogCategory",
+                ThemesCatalogComponent:"ThemesCatalogComponent",
+                CheckUserLoginOrNot:"CheckUserLoginOrNot",
+            },
+        },
+    };
+
+
   return (
+      // <AuthContext.Provider value={authContext}>
+      //     <NavigationContainer
+      //         ref={navigationRef}
+      //        // linking={url}
+      //        // linking={linking}
+      //     >
+      //
+      //
+      //         { loginState.userToken !== null &&
+      //
+      //             <Stack.Navigator
+      //                 initialRouteName='CatalogCategory'
+      //                 screenOptions={{
+      //                     headerShown: false
+      //                 }}
+      //
+      //             >
+      //                 <Stack.Screen name="CatalogCategory" component={CatalogCategoryScreen}
+      //                       options={({route}) => ({
+      //                           tabBarButton: () => null,
+      //                           tabBarStyle: {display: 'none'},
+      //                       })}
+      //                 />
+      //
+      //                 <Stack.Screen name="Catalog" component={CatalogScreen}
+      //                       options={({route}) => ({
+      //                           tabBarButton: () => null,
+      //                           tabBarStyle: {display: 'none'},
+      //                       })}
+      //                 />
+      //
+      //                 <Stack.Screen name="CardProduct" component={CardProductScreen}
+      //                       options={({route}) => ({
+      //                           tabBarButton: () => null,
+      //                           tabBarStyle: {display: 'none'},
+      //                       })}
+      //                 />
+      //
+      //                 <Stack.Screen name="Favorites" component={FavoritesScreen}
+      //                       options={({route}) => ({
+      //                           tabBarButton: () => null,
+      //                           tabBarStyle: {display: 'none'},
+      //                       })}
+      //                 />
+      //
+      //                 <Stack.Screen name="Basket" component={BasketScreen}
+      //                       options={({route}) => ({
+      //                           tabBarButton: () => null,
+      //                           tabBarStyle: {display: 'none'},
+      //                       })}
+      //                 />
+      //
+      //
+      //                 <Stack.Screen name="PersonalArea" component={PersonalAreaScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="Ambassador" component={AmbassadorScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="AmbassadorLink" component={AmbassadorLinkScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //
+      //
+      //                 <Stack.Screen name="Jobs" component={JobsScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="JobSinglePage" component={JobSinglePageScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="RatingProduct" component={RatingProductScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="HighRating" component={HighRatingScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="LowRating" component={LowRatingScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="NotYetProduct" component={NotYetProductScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="ChoosingMarketPlace" component={ChoosingMarketPlaceScreen}
+      //                       options={({route}) => ({
+      //                           tabBarButton: () => null,
+      //                           tabBarStyle: {display: 'none'},
+      //                       })}
+      //                 />
+      //
+      //                 <Stack.Screen name="ProductSearch" component={ProductSearchScreen}
+      //                       options={({route}) => ({
+      //                           tabBarButton: () => null,
+      //                           tabBarStyle: {display: 'none'},
+      //                       })}
+      //                 />
+      //                 <Stack.Screen name="InstructionComponent" component={InstructionComponentScreen}
+      //                       options={({route}) => ({
+      //                           tabBarButton: () => null,
+      //                           tabBarStyle: {display: 'none'},
+      //                       })}
+      //                 />
+      //
+      //                   <Stack.Screen name="WristWatchCatalogComponent" component={WristWatchCatalogComponentScreen}
+      //                       options={({route}) => ({
+      //                           tabBarButton: () => null,
+      //                           tabBarStyle: {display: 'none'},
+      //                       })}
+      //                   />
+      //                   <Stack.Screen name="ThemesCatalogComponent" component={ThemesCatalogComponentScreen}
+      //                       options={({route}) => ({
+      //                           tabBarButton: () => null,
+      //                           tabBarStyle: {display: 'none'},
+      //                       })}
+      //                   />
+      //
+      //                   <Stack.Screen name="ThemeSingleComponent" component={ThemeSingleComponentScreen}
+      //                       options={({route}) => ({
+      //                           tabBarButton: () => null,
+      //                           tabBarStyle: {display: 'none'},
+      //                       })}
+      //                   />
+      //
+      //
+      //
+      //             </Stack.Navigator>
+      //         }
+      //
+      //
+      //
+      //         { loginState.userToken === null &&
+      //
+      //             <Stack.Navigator
+      //                 initialRouteName='Dashboard'
+      //                 screenOptions={{
+      //                     headerShown: false
+      //                 }}
+      //
+      //             >
+      //
+      //
+      //                 <Stack.Screen name="Dashboard" component={DashboardScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="SignIn" component={SignInScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="SignUp" component={SignUpScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="RecoveryAccountEmail" component={RecoveryAccountEmailScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="RecoveryAccountCode" component={RecoveryAccountCodeScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //                 <Stack.Screen name="NewPassword" component={NewPasswordScreen}
+      //                               options={({route}) => ({
+      //                                   tabBarButton: () => null,
+      //                                   tabBarStyle: {display: 'none'},
+      //                               })}
+      //                 />
+      //
+      //
+      //             </Stack.Navigator>
+      //         }
+      //     </NavigationContainer>
+      // </AuthContext.Provider>
+      //
+
       <AuthContext.Provider value={authContext}>
-          <NavigationContainer>
-              {loginState.userToken !== null ?
-                  (
-              <Stack.Navigator
-                  initialRouteName='CatalogCategory'
-                  screenOptions={{
-                      headerShown: false
-                  }}
+          <NavigationContainer linking={linking}>
 
-              >
+              { loginState.userToken !== null ?
 
+                 (
+                     <Stack.Navigator
+                      initialRouteName='CatalogCategory'
+                      screenOptions={{
+                          headerShown: false
+                      }}
 
-                  <Stack.Screen name="CatalogCategory" component={CatalogCategoryScreen}
-                        options={({route}) => ({
-                            tabBarButton: () => null,
-                            tabBarStyle: {display: 'none'},
-                        })}
-                  />
+                  >
+                      <Stack.Screen name="CatalogCategory" component={CatalogCategoryScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
 
-                  <Stack.Screen name="Catalog" component={CatalogScreen}
-                        options={({route}) => ({
-                            tabBarButton: () => null,
-                            tabBarStyle: {display: 'none'},
-                        })}
-                  />
+                      <Stack.Screen name="Catalog" component={CatalogScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
 
-                  <Stack.Screen name="CardProduct" component={CardProductScreen}
-                        options={({route}) => ({
-                            tabBarButton: () => null,
-                            tabBarStyle: {display: 'none'},
-                        })}
-                  />
+                      <Stack.Screen name="CardProduct" component={CardProductScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
 
-                  <Stack.Screen name="Favorites" component={FavoritesScreen}
-                        options={({route}) => ({
-                            tabBarButton: () => null,
-                            tabBarStyle: {display: 'none'},
-                        })}
-                  />
+                      <Stack.Screen name="Favorites" component={FavoritesScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
 
-                  <Stack.Screen name="Basket" component={BasketScreen}
-                        options={({route}) => ({
-                            tabBarButton: () => null,
-                            tabBarStyle: {display: 'none'},
-                        })}
-                  />
-
-
-                  <Stack.Screen name="PersonalArea" component={PersonalAreaScreen}
-                                options={({route}) => ({
-                                    tabBarButton: () => null,
-                                    tabBarStyle: {display: 'none'},
-                                })}
-                  />
-
-                  <Stack.Screen name="Ambassador" component={AmbassadorScreen}
-                                options={({route}) => ({
-                                    tabBarButton: () => null,
-                                    tabBarStyle: {display: 'none'},
-                                })}
-                  />
-
-                  <Stack.Screen name="AmbassadorLink" component={AmbassadorLinkScreen}
-                                options={({route}) => ({
-                                    tabBarButton: () => null,
-                                    tabBarStyle: {display: 'none'},
-                                })}
-                  />
+                      <Stack.Screen name="Basket" component={BasketScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
 
 
+                      <Stack.Screen name="PersonalArea" component={PersonalAreaScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
 
-                  <Stack.Screen name="Jobs" component={JobsScreen}
-                                options={({route}) => ({
-                                    tabBarButton: () => null,
-                                    tabBarStyle: {display: 'none'},
-                                })}
-                  />
+                      <Stack.Screen name="Ambassador" component={AmbassadorScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
 
-                  <Stack.Screen name="JobSinglePage" component={JobSinglePageScreen}
-                                options={({route}) => ({
-                                    tabBarButton: () => null,
-                                    tabBarStyle: {display: 'none'},
-                                })}
-                  />
-
-                  <Stack.Screen name="RatingProduct" component={RatingProductScreen}
-                                options={({route}) => ({
-                                    tabBarButton: () => null,
-                                    tabBarStyle: {display: 'none'},
-                                })}
-                  />
-
-                  <Stack.Screen name="HighRating" component={HighRatingScreen}
-                                options={({route}) => ({
-                                    tabBarButton: () => null,
-                                    tabBarStyle: {display: 'none'},
-                                })}
-                  />
-
-                  <Stack.Screen name="LowRating" component={LowRatingScreen}
-                                options={({route}) => ({
-                                    tabBarButton: () => null,
-                                    tabBarStyle: {display: 'none'},
-                                })}
-                  />
-
-                  <Stack.Screen name="NotYetProduct" component={NotYetProductScreen}
-                                options={({route}) => ({
-                                    tabBarButton: () => null,
-                                    tabBarStyle: {display: 'none'},
-                                })}
-                  />
-
-                  <Stack.Screen name="ChoosingMarketPlace" component={ChoosingMarketPlaceScreen}
-                        options={({route}) => ({
-                            tabBarButton: () => null,
-                            tabBarStyle: {display: 'none'},
-                        })}
-                  />
-
-                  <Stack.Screen name="ProductSearch" component={ProductSearchScreen}
-                        options={({route}) => ({
-                            tabBarButton: () => null,
-                            tabBarStyle: {display: 'none'},
-                        })}
-                  />
-                  <Stack.Screen name="InstructionComponent" component={InstructionComponentScreen}
-                        options={({route}) => ({
-                            tabBarButton: () => null,
-                            tabBarStyle: {display: 'none'},
-                        })}
-                  />
-
-                    <Stack.Screen name="WristWatchCatalogComponent" component={WristWatchCatalogComponentScreen}
-                        options={({route}) => ({
-                            tabBarButton: () => null,
-                            tabBarStyle: {display: 'none'},
-                        })}
-                    />
+                      <Stack.Screen name="AmbassadorLink" component={AmbassadorLinkScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
 
 
 
-              </Stack.Navigator>
-                  )
+                      <Stack.Screen name="Jobs" component={JobsScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
+                      <Stack.Screen name="JobSinglePage" component={JobSinglePageScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
+                      <Stack.Screen name="RatingProduct" component={RatingProductScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
+                      <Stack.Screen name="HighRating" component={HighRatingScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
+                      <Stack.Screen name="LowRating" component={LowRatingScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
+                      <Stack.Screen name="NotYetProduct" component={NotYetProductScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
+                      <Stack.Screen name="ChoosingMarketPlace" component={ChoosingMarketPlaceScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
+                      <Stack.Screen name="ProductSearch" component={ProductSearchScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+                      <Stack.Screen name="InstructionComponent" component={InstructionComponentScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
+                      <Stack.Screen name="WristWatchCatalogComponent" component={WristWatchCatalogComponentScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+                      <Stack.Screen name="ThemesCatalogComponent" component={ThemesCatalogComponentScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
+                      <Stack.Screen name="ThemeSingleComponent" component={ThemeSingleComponentScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
+                      <Stack.Screen name="CheckUserLoginOrNot" component={CheckUserLoginOrNotScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
+
+
+                  </Stack.Navigator>)
+
                   :
-
 
                   <Stack.Navigator
                       initialRouteName='Dashboard'
@@ -505,15 +853,253 @@ export default function App() {
                                     })}
                       />
 
+                      <Stack.Screen name="CheckUserLoginOrNot" component={CheckUserLoginOrNotScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
 
                   </Stack.Navigator>
               }
+
           </NavigationContainer>
       </AuthContext.Provider>
 
-
   );
+
+
 }
+
+
+
+
+
+// export default function App() {
+//     return (
+//         <AuthContext.Provider value={authContext}>
+//             <NavigationContainer linking={linking}>
+//                 { loginState.userToken !== null &&
+//
+//                     <Stack.Navigator
+//                         initialRouteName='CatalogCategory'
+//                         screenOptions={{
+//                             headerShown: false
+//                         }}
+//
+//                     >
+//                         <Stack.Screen name="CatalogCategory" component={CatalogCategoryScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="Catalog" component={CatalogScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="CardProduct" component={CardProductScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="Favorites" component={FavoritesScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="Basket" component={BasketScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//
+//                         <Stack.Screen name="PersonalArea" component={PersonalAreaScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="Ambassador" component={AmbassadorScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="AmbassadorLink" component={AmbassadorLinkScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//
+//
+//                         <Stack.Screen name="Jobs" component={JobsScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="JobSinglePage" component={JobSinglePageScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="RatingProduct" component={RatingProductScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="HighRating" component={HighRatingScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="LowRating" component={LowRatingScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="NotYetProduct" component={NotYetProductScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="ChoosingMarketPlace" component={ChoosingMarketPlaceScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="ProductSearch" component={ProductSearchScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//                         <Stack.Screen name="InstructionComponent" component={InstructionComponentScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="WristWatchCatalogComponent" component={WristWatchCatalogComponentScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//                         <Stack.Screen name="ThemesCatalogComponent" component={ThemesCatalogComponentScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="ThemeSingleComponent" component={ThemeSingleComponentScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//
+//
+//                     </Stack.Navigator>
+//                 }
+//
+//
+//
+//                 { loginState.userToken === null &&
+//
+//                     <Stack.Navigator
+//                         initialRouteName='Dashboard'
+//                         screenOptions={{
+//                             headerShown: false
+//                         }}
+//
+//                     >
+//
+//
+//                         <Stack.Screen name="Dashboard" component={DashboardScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="SignIn" component={SignInScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="SignUp" component={SignUpScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="RecoveryAccountEmail" component={RecoveryAccountEmailScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="RecoveryAccountCode" component={RecoveryAccountCodeScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//                         <Stack.Screen name="NewPassword" component={NewPasswordScreen}
+//                                       options={({route}) => ({
+//                                           tabBarButton: () => null,
+//                                           tabBarStyle: {display: 'none'},
+//                                       })}
+//                         />
+//
+//
+//                     </Stack.Navigator>
+//                 }
+//
+//             </NavigationContainer>
+//         </AuthContext.Provider>
+//     );
+// }
+
+
 
 const styles = StyleSheet.create({
   container: {

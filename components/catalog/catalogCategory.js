@@ -20,8 +20,12 @@ import {
     FlatList,
     Dimensions,
     TouchableHighlight,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback,
+    Platform,
 } from 'react-native';
+
+import * as Linking from 'expo-linking';
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -506,14 +510,37 @@ export default class App extends Component {
     componentDidMount() {
         const { navigation } = this.props;
 
+
+        // AsyncStorage.clear();
+        // let url = Linking.useURL();
+        // alert(url)
+        // if (url)
+        // {
+        //     url = url.split('//');
+        //     url = url.length == 2 ? url[1] : null
+        //     console.log(url)
+        // }
+
+        // console.log(Linking.getInitialURL())
+
+        // if (Platform.OS === 'android') {
+        //     Linking.getInitialURL().then(url => {
+        //
+        //         alert(url, 'android url');
+        //
+        //         // this.navigate(url);
+        //     });
+        // } else {
+        //     Linking.addEventListener('url', this.handleOpenURL);
+        // }
+
+
         // AsyncStorage.clear();
 
         this.checkBasketCount();
         this.checkFavouritesProductsCount();
 
         this.focusListener = navigation.addListener("focus", () => {
-
-            // AsyncStorage.removeItem('filterInfo')
 
             this.checkBasketCount();
             this.checkFavouritesProductsCount();
@@ -527,7 +554,35 @@ export default class App extends Component {
             // console.log('Bum END')
         }
 
+        // Linking.remove('url', this.handleOpenURL);
+
+
     }
+
+    // handleOpenURL = (event) => { // D
+    //     this.navigate(event.url);
+    // }
+    // navigate = (url) => { // E
+    //
+    //     console.log(url, 'navigatenavigate')
+    //
+    //     // const { navigate } = this.props.navigation;
+    //     // const route = url.replace(/.*?:\/\//g, '');
+    //     // const id = route.match(/\/([^\/]+)\/?$/)[1];
+    //     // const routeName = route.split('/')[0];
+    //
+    //     // console.log(routeName, 'routeName')
+    //
+    //     url = url.split('//');
+    //     const routeName = url.length == 2 ? url[1] : null;
+    //
+    //     console.log(routeName, 'routeName')
+    //
+    //     if (routeName === 'records') {
+    //         alert('vjhfjf')
+    //         this.props.navigation.navigate('ThemesCatalogComponent')
+    //     };
+    // }
 
 
     checkBasketCount = async () => {

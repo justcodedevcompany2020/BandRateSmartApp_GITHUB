@@ -1,8 +1,9 @@
 {
   "expo": {
+    "scheme": "bandratesmart",
     "name": "BandRateSmart",
     "slug": "BandRateSmart",
-    "version": "8.0.0",
+    "version": "10.0.0",
     "orientation": "portrait",
     "icon": "./assets/android_logotwo.png",
     "userInterfaceStyle": "light",
@@ -20,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.JustCode.BandRateSmart",
-      "buildNumber": "8.0.0",
+      "buildNumber": "10.0.0",
       "infoPlist": {
         "UIBackgroundModes": [
           "remote-notification"
@@ -33,14 +34,40 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.JustCode.BandRateSmart",
-      "versionCode": 8,
+      "versionCode": 10,
       "googleServicesFile": "./google-services.json",
       "useNextNotificationsApi": true,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE"
+      ],
+
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "*.myapp.io",
+              "pathPrefix": "/records"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
       ]
+
     },
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ]
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
     },

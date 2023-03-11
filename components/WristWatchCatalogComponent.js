@@ -1670,6 +1670,13 @@ export default class App extends Component {
     }
 
 
+
+    redirectToThemes = () => {
+        this.props.navigation.navigate("ThemesCatalogComponent");
+    }
+
+
+
     render() {
 
         let React_Native_Rating_Bar = [];
@@ -2682,6 +2689,9 @@ export default class App extends Component {
                         <ScrollView style={styles.not_yet_product_page_main}>
                             <TouchableOpacity style={[styles.personal_area_button, {backgroundColor: '#ffffff'}, {borderWidth: 1}]}   onPress={()=>this.openCatalog()}>
                                 <Text style={[styles.personal_area_button_text, {color: '#333333'}]}>Перейти в каталог</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.personal_area_button, {backgroundColor: '#ffffff'}, {borderWidth: 1}]}   onPress={()=>this.redirectToThemes()}>
+                                <Text style={[styles.personal_area_button_text, {color: '#333333'}]}>Скачать темы</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.personal_area_button, {backgroundColor:'#ffffff'}, {borderWidth:1}]}   onPress={()=>this.redirectToAmbassador()} >
                                 <Text style={[styles.personal_area_button_text, {color:'#333333'}]}>

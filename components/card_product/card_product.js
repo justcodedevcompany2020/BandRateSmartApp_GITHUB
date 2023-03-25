@@ -4,6 +4,7 @@ import Svg, { Path, Rect, Circle, Defs, Stop, ClipPath, G } from "react-native-s
 // import { SliderBox } from "react-native-image-slider-box";
 import { StatusBar } from 'expo-status-bar';
 // import { ImageSlider } from "react-native-image-slider-banner";
+import {APP_URL} from "../../env";
 
 import {
     Text,
@@ -122,7 +123,7 @@ export default class App extends Component {
         // console.log(product_info, "product_info");
 
         fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/CatalogOneProduct/product_id='+product_id,
+            `${APP_URL}/CatalogOneProduct/product_id=${product_id}`,
             {
                 method: "GET",
                 headers: {
@@ -138,6 +139,7 @@ export default class App extends Component {
             })
             .then((response) => {
 
+                console.log(response.data)
                 console.log(response.data.oneproducts[0], "response");
 
                 let pictures = response.data.oneproducts[0].product_image
@@ -165,7 +167,14 @@ export default class App extends Component {
     }
 
 
-
+    checkAuthUser = async () => {
+        let userToken = await AsyncStorage.getItem('userToken');
+        console.log( userToken, 'userToken');
+        this.setState({
+            userIsAuth: userToken !== null ? true : false
+        })
+        // return userToken !== null ? true : false;
+    }
 
     getProductInfo = async () => {
 
@@ -176,14 +185,14 @@ export default class App extends Component {
 
         // console.log(userToken)
         // console.log('http://37.230.116.113/BandRate-Smart/public/api/CatalogOneProduct/product_id='+product_id)
-
+        console.log(`${APP_URL}/CatalogOneProduct/product_id=${product_id}`)
         fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/CatalogOneProduct/product_id='+product_id,
+            `${APP_URL}/CatalogOneProduct/product_id=${product_id}`,
             // 'http://37.230.116.113/BandRate-Smart/public/api/CatalogOneProduct/product_id=1196005',
             {
                 method: "GET",
                 headers: {
-                    'Authorization': AuthStr,
+                    // 'Authorization': AuthStr,
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
@@ -194,7 +203,7 @@ export default class App extends Component {
             })
             .then( async (response) => {
 
-                console.log(response.data.oneproducts[0].category.category_id, "getProductInfo getProductInfo");
+                console.log(response, "ыыыgetProductInfo getProductInfo");
                 // console.log(response.data.oneproductsParams, "response.data.oneproductsParams");
 
 
@@ -255,9 +264,9 @@ export default class App extends Component {
         let userToken = await AsyncStorage.getItem('userToken');
         let AuthStr = 'Bearer ' + userToken;
 
-        console.log(`http://37.230.116.113/BandRate-Smart/public/api/getModal?page=1&search=${clock_code}`)
+        // console.log(`http://37.230.116.113/BandRate-Smart/public/api/getModal?page=1&search=${clock_code}`)
         fetch(
-            `http://37.230.116.113/BandRate-Smart/public/api/getModal?page=1&search=${clock_code}`,
+            `${APP_URL}/getModal?page=1&search=${clock_code}`,
             {
                 method: "GET",
                 headers: {
@@ -289,7 +298,7 @@ export default class App extends Component {
         let AuthStr = 'Bearer ' + userToken;
 
         fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/ProductBasketCount',
+            `${APP_URL}/ProductBasketCount`,
             {
                 method: "GET",
                 headers: {
@@ -338,7 +347,7 @@ export default class App extends Component {
         let AuthStr = 'Bearer ' + userToken;
 
         fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/allFavoritProductcount',
+            `${APP_URL}/allFavoritProductcount`,
             {
                 method: "GET",
                 headers: {
@@ -353,7 +362,7 @@ export default class App extends Component {
             })
             .then((response) => {
 
-                // console.log(response, "favourites_product_count_ggggg");
+                console.log(response, "favourites_product_count");
 
                 if (response.hasOwnProperty("status")) {
                     if (response.status === true) {
@@ -381,19 +390,18 @@ export default class App extends Component {
     componentDidMount() {
         const { navigation } = this.props;
 
-
-        this.getProductInfo();
+        // this.checkAuthUser()
+        // this.getProductInfo();
         this.checkBasketCount();
         this.checkFavouritesProductsCount();
         // console.log(this.props.prev_page, 'this.props.prev_page')
 
         this.focusListener = navigation.addListener("focus", () => {
+            this.checkAuthUser()
             this.getProductInfo();
-            this.checkBasketCount();
-            this.checkFavouritesProductsCount();
-
+            // this.checkBasketCount();
+            // this.checkFavouritesProductsCount();
             // console.log(this.props.prev_page, 'this.props.prev_page')
-
         });
     }
     componentWillUnmount() {
@@ -418,7 +426,7 @@ export default class App extends Component {
 
 
         fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/FavoritProduct',
+            `${APP_URL}/FavoritProduct`,
             {
                 method: "POST",
                 headers: {
@@ -460,7 +468,7 @@ export default class App extends Component {
         // console .log(product_id, Original_Product_id, "idiner");
 
         fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/DeleteFavoritProduct',
+            `${APP_URL}/DeleteFavoritProduct`,
             {
                 method: "POST",
                 headers: {
@@ -498,13 +506,11 @@ export default class App extends Component {
         let AuthStr = 'Bearer ' + userToken;
         let product_id = this.state.single_product_info.product_id;
 
-
-
         // console .log(product_id, "idiner");
 
 
         fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/AddtoBasket',
+            `${APP_URL}/AddtoBasket`,
             {
                 method: "POST",
                 headers: {
@@ -594,7 +600,7 @@ export default class App extends Component {
 
 
         await  fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/AddtoBasket',
+            `${APP_URL}/AddtoBasket`,
             {
                 method: "POST",
                 headers: {
@@ -726,7 +732,7 @@ export default class App extends Component {
 
 
 
-                    {this.state.favourite_product_heart &&
+                    {this.state.favourite_product_heart && this.state.userIsAuth === true &&
 
                         <TouchableOpacity
                             style={styles.card_product_favorites_btn}
@@ -743,7 +749,7 @@ export default class App extends Component {
 
                     }
 
-                    {!this.state.favourite_product_heart &&
+                    {!this.state.favourite_product_heart && this.state.userIsAuth === true &&
 
                         <TouchableOpacity style={styles.card_product_favorites_btn} onPress={() => {this.addToFavouritesList()}}>
                             <Svg xmlns="http://www.w3.org/2000/svg" width={30} height={26} viewBox="0 0 30 26" fill="none">
@@ -804,20 +810,23 @@ export default class App extends Component {
                             <Text style={styles.card_product_info_price}>Цена:
                                 {/*<View style={styles.card_product_info_price_line}></View>*/}
                                 <Text style={styles.card_product_info_price_bold}>
-                                    {this.state.single_product_info.price} Руб.
+                                     {this.state.single_product_info.price} Руб.
                                 </Text>
 
                             </Text>
-                            {this.state.single_product_info.oldprice != 'null' &&
 
-                                <Text style={styles.catalog_item_info_discounted_price}>{this.state.single_product_info.oldprice.slice(1, -1)}руб.</Text>
+                            {this.state.single_product_info.oldprice !== null && this.state.single_product_info.oldprice != 'null' &&
+
+                                <Text style={styles.catalog_item_info_discounted_price}>
+                                    {this.state.single_product_info.oldprice.slice(1, -1)}руб.
+                                </Text>
                             }
+
                         </View>
                         <View style={styles.card_product_info_description}>
                             <Text style={styles.card_product_info_description_title}>Описание</Text>
                             <View style={styles.card_product_info_description_line}></View>
                             <View style={styles.card_product_info_description_items}>
-
 
                                 <View style={styles.card_product_info_description_item}>
                                     <Text style={styles.card_product_info_description_item_title}>Модель</Text>
@@ -1002,14 +1011,17 @@ export default class App extends Component {
                                                 <Text style={styles.similar_products_item_info_price}>
                                                     {product.price}<Text style={styles.similar_products_item_info_price_light}>руб.</Text>
                                                 </Text>
-                                                <TouchableOpacity style={styles.card_icon} onPress={() => {this.addToSimiliarProduct(product)}}>
-                                                    <Svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width={22}
-                                                        height={20}
-                                                        viewBox="0 0 22 20"
-                                                        fill="none"
-                                                    >
+                                                <TouchableOpacity
+                                                    style={styles.card_icon}
+                                                    onPress={() => {
+                                                        if(this.state.userIsAuth === true) {
+                                                            this.addToSimiliarProduct(product)
+                                                        } else {
+                                                            this.props.navigation.navigate('SignIn')
+                                                        }
+                                                    }}
+                                                >
+                                                    <Svg xmlns="http://www.w3.org/2000/svg" width={22} height={20} viewBox="0 0 22 20" fill="none">
                                                         <Path
                                                             d="M19.683 11.662h0a.421.421 0 01-.406.338H7.471l.12.598.25 1.25.08.402h10.662c.254 0 .47.248.406.537l-.211.948-.085.382.35.174c.547.272.93.848.93 1.521 0 .943-.745 1.688-1.64 1.688-.894 0-1.639-.745-1.639-1.688 0-.475.191-.903.497-1.209l.852-.853H7.624l.852.853c.305.306.496.734.496 1.21 0 .942-.744 1.687-1.639 1.687-.894 0-1.639-.745-1.639-1.688 0-.63.336-1.176.828-1.466l.307-.18-.07-.349L4.076 2.402 3.996 2H.916A.427.427 0 01.5 1.562V.938C.5.685.697.5.917.5h3.916c.19 0 .365.138.407.348h0l.35 1.75.081.402h15.412c.254 0 .47.248.406.537l-1.806 8.125z"
                                                             stroke="#fff"
@@ -1043,7 +1055,17 @@ export default class App extends Component {
 
                 <View style={styles.footer_wrapper}>
 
-                    <TouchableOpacity style={[styles.add_to_card_button, {position:'absolute',  left: 20, right: 0, top: -60}]} onPress={() =>{this.addToBasket()}}>
+                    <TouchableOpacity
+                        style={[styles.add_to_card_button, {position:'absolute',  left: 20, right: 0, top: -60}]}
+                        onPress={() =>{
+
+                            if(this.state.userIsAuth === true) {
+                                this.addToBasket()
+                            } else {
+                                this.props.navigation.navigate('SignIn')
+                            }
+                        }}
+                    >
                         <Text style={styles.add_to_card_button_text}>В корзину</Text>
                     </TouchableOpacity>
 
@@ -1053,9 +1075,11 @@ export default class App extends Component {
                         <TouchableOpacity
                             style={[styles.add_to_card_button, {position:'absolute',  backgroundColor:'#153364', maxWidth:200, width: '100%', right: 20, top: -60}]}
                             onPress={() =>{
-
-                                this.props.navigation.navigate('ThemesCatalogComponent')
-
+                                if(this.state.userIsAuth === true) {
+                                    this.props.navigation.navigate('ThemesCatalogComponent')
+                                } else {
+                                    this.props.navigation.navigate('SignIn')
+                                }
                             }}
                         >
                             <Text style={styles.add_to_card_button_text}>Темы на циферблат</Text>
@@ -1064,7 +1088,16 @@ export default class App extends Component {
                     }
 
 
-                    <TouchableOpacity style={[styles.footer_page_btn, {flexDirection: 'row', position: "relative",}]} onPress={() => this.redirectToFavorites()}>
+                    <TouchableOpacity
+                        style={[styles.footer_page_btn, {flexDirection: 'row', position: "relative",}]}
+                        onPress={() => {
+                            if(this.state.userIsAuth === true) {
+                                this.redirectToFavorites()
+                            } else {
+                                this.props.navigation.navigate('SignIn')
+                            }
+                        }}
+                    >
                         <Svg xmlns="http://www.w3.org/2000/svg" width={28} height={26} viewBox="0 0 28 26" fill="none">
                             <Path d="M7.75 1.75c-3.451 0-6.25 2.77-6.25 6.188 0 2.758 1.094 9.306 11.86 15.925a1.232 1.232 0 001.28 0C25.406 17.242 26.5 10.696 26.5 7.938c0-3.418-2.799-6.188-6.25-6.188S14 5.5 14 5.5s-2.799-3.75-6.25-3.75z" stroke="#333" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"/>
                         </Svg>
@@ -1075,7 +1108,12 @@ export default class App extends Component {
                             </View>
                         }
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.footer_page_btn} onPress={() => this.redirectToProductSearch()}>
+
+                    <TouchableOpacity style={styles.footer_page_btn}
+                          onPress={() => {
+                                this.redirectToProductSearch()
+                          }}
+                    >
                         <Svg xmlns="http://www.w3.org/2000/svg" width={28} height={30} viewBox="0 0 28 30" fill="none">
                             <Path d="M15.16 24.268h9.108a1.867 1.867 0 001.867-1.867V3.734a1.867 1.867 0 00-1.867-1.867H5.598a1.867 1.867 0 00-1.866 1.867v7.946a8.403 8.403 0 00-1.867.936V3.734A3.734 3.734 0 015.6 0h18.668A3.734 3.734 0 0128 3.734V22.4a3.734 3.734 0 01-3.733 3.734h-7.242l-1.866-1.867h.002zM8.869 9.334a1.4 1.4 0 100-2.8 1.4 1.4 0 000 2.8zm4.198-.934a.933.933 0 01.933-.933h7.467a.934.934 0 010 1.867H14a.934.934 0 01-.933-.934zm0 5.6a.933.933 0 01.933-.933h7.467a.933.933 0 010 1.867H14a.934.934 0 01-.933-.933zm8.4 6.534H14.88c.07-.62.07-1.246 0-1.866h6.588a.933.933 0 110 1.866h-.002zM.717 16.624a6.533 6.533 0 009.736 8.204l4.747 4.775a.934.934 0 101.32-1.322l-4.76-4.76A6.533 6.533 0 10.715 16.623h.001zm9.696.384A4.667 4.667 0 112.7 22.265a4.667 4.667 0 017.714-5.257z" fill="#333"/>
                         </Svg>
@@ -1086,15 +1124,19 @@ export default class App extends Component {
                             <Path d="M22.495 2.638l17.884 17.884H38.1v19.1a.7.7 0 01-.7.7h-9.5v-15.4H16.1v15.4H6.6a.7.7 0 01-.7-.7v-19.1H3.621L21.505 2.638a.7.7 0 01.99 0z" stroke="#333333" strokeWidth={3}/>
                         </Svg>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.footer_page_btn, {flexDirection: 'row', position: "relative",}]} onPress={() => this.redirectToBasket()}>
+
+                    <TouchableOpacity
+                        style={[styles.footer_page_btn, {flexDirection: 'row', position: "relative",}]}
+                        onPress={() => {
+                            if(this.state.userIsAuth === true) {
+                                this.redirectToBasket()
+                            } else {
+                                this.props.navigation.navigate('SignIn')
+                            }
+                        }}
+                    >
                         <View style={styles.footer_basket_icon}>
-                            <Svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width={33}
-                                height={29}
-                                viewBox="0 0 33 29"
-                                fill="none"
-                            >
+                            <Svg xmlns="http://www.w3.org/2000/svg" width={33} height={29} viewBox="0 0 33 29" fill="none">
                                 <Path
                                     d="M29.282 16.843h0a.372.372 0 01-.366.282H10.893l.249 1.203.375 1.812.165.797h16.192c.255 0 .415.227.367.437l-.317 1.375-.179.78.721.346a2.17 2.17 0 011.242 1.953c0 1.189-.978 2.172-2.208 2.172-1.23 0-2.208-.983-2.208-2.172 0-.604.25-1.15.66-1.547l1.773-1.718h-16.95l1.774 1.718c.41.397.66.943.66 1.547C13.208 27.017 12.23 28 11 28s-2.208-.983-2.208-2.172c0-.798.439-1.502 1.106-1.881l.632-.36-.147-.712L6.358 3.422l-.165-.797H1.375A.367.367 0 011 2.265V1.36C1 1.172 1.157 1 1.375 1h5.874c.187 0 .335.129.368.29h0l.525 2.538.165.797h23.317c.255 0 .415.227.367.437l-2.709 11.78z"
                                     stroke="#333"
@@ -1112,15 +1154,18 @@ export default class App extends Component {
                     </TouchableOpacity>
 
 
-                    <TouchableOpacity style={styles.footer_page_btn}   onPress={() => this.redirectToPersonalArea()}>
-                        <Svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width={30}
-                            height={30}
-                            viewBox="0 0 496 496"
-                            fill="none"
+                    <TouchableOpacity
+                        style={styles.footer_page_btn}
+                        onPress={() => {
+                            if(this.state.userIsAuth === true) {
+                                this.redirectToPersonalArea()
+                            } else {
+                                this.props.navigation.navigate('SignIn')
+                            }
 
-                        >
+                        }}
+                    >
+                        <Svg xmlns="http://www.w3.org/2000/svg" width={30} height={30} viewBox="0 0 496 496" fill="none">
                             <Path
                                 d="M248 96c-53 0-96 43-96 96s43 96 96 96 96-43 96-96-43-96-96-96zm0 144c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm0-240C111 0 0 111 0 248s111 248 248 248 248-111 248-248S385 0 248 0zm0 448c-49.7 0-95.1-18.3-130.1-48.4 14.9-23 40.4-38.6 69.6-39.5 20.8 6.4 40.6 9.6 60.5 9.6s39.7-3.1 60.5-9.6c29.2 1 54.7 16.5 69.6 39.5-35 30.1-80.4 48.4-130.1 48.4zm162.7-84.1c-24.4-31.4-62.1-51.9-105.1-51.9-10.2 0-26 9.6-57.6 9.6-31.5 0-47.4-9.6-57.6-9.6-42.9 0-80.6 20.5-105.1 51.9C61.9 331.2 48 291.2 48 248c0-110.3 89.7-200 200-200s200 89.7 200 200c0 43.2-13.9 83.2-37.3 115.9z"
                                 fill="#333"

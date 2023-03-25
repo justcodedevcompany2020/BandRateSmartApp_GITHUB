@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Svg, { Path, Rect, Circle, Defs, Stop, ClipPath, G } from "react-native-svg";
 import {StatusBar} from "expo-status-bar";
-
+import {APP_URL} from "../../env";
 
 
 import {
@@ -87,7 +87,7 @@ export default class App extends Component {
                 link_error_text: "",
             })
             fetch(
-                'http://37.230.116.113/BandRate-Smart/public/api/createAmbasator',
+                `${APP_URL}/createAmbasator`,
                 {
                     method: "POST",
                     headers: {

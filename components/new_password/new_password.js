@@ -118,12 +118,10 @@ export default class App extends Component {
 
             }
 
-
-
         } else {
 
             try {
-                fetch(`http://37.230.116.113/BandRate-Smart/public/api/updatepassword`, {
+                fetch(`${APP_URL}/updatepassword`, {
                     method: 'post',
                     headers: {
                         'Accept': 'application/json',

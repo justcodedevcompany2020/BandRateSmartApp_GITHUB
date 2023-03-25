@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Svg, { Path, Rect, Circle, Defs, Stop, ClipPath, G } from "react-native-svg";
 // import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StatusBar } from 'expo-status-bar';
-
+import {APP_URL} from "../../env";
 
 import {
     Text,
@@ -48,7 +48,7 @@ export default class App extends Component {
     redirectToRecoveryAccountCode = async () => {
 
         try {
-            fetch(`http://37.230.116.113/BandRate-Smart/public/api/resetpassword`, {
+            fetch(`${APP_URL}/resetpassword`, {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',

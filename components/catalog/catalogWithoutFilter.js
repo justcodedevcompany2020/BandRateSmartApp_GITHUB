@@ -46,7 +46,7 @@ export default class App extends Component {
             sort_by_gender: '',
             catalogItems: [
                 {
-                   image: require('../../assets/images/catalog_img1.png'),
+                    image: require('../../assets/images/catalog_img1.png'),
                     name: 'BandRate Smart',
                     code: "Q1111BR",
                     discountedPrice: "",
@@ -268,7 +268,9 @@ export default class App extends Component {
             ],
 
             sort_by_additional_functions: [],
-            isAuthUser: false
+            isAuthUser: false,
+            pagetitle: '',
+            last_page: null
         };
 
 
@@ -308,29 +310,29 @@ export default class App extends Component {
                 console.log("ERROR " , error)
 
                 let test =
-                {
-                    data: {
-                        'transaction_count': 3,
-                        'transaction_success_sum': 510000,
-                        'transaction_notsuccess_sum': 4730,
-                        'succesfuly_payments': '99.7%',
-                        'not_succesfuly_payments_count': 1,
+                    {
+                        data: {
+                            'transaction_count': 3,
+                            'transaction_success_sum': 510000,
+                            'transaction_notsuccess_sum': 4730,
+                            'succesfuly_payments': '99.7%',
+                            'not_succesfuly_payments_count': 1,
 
-                        transactions: [
-                            {},
-                            {},
-                            {},
-                        ],
+                            transactions: [
+                                {},
+                                {},
+                                {},
+                            ],
 
-                        charts: [
-                            {},
-                            {},
-                            {},
-                        ]
+                            charts: [
+                                {},
+                                {},
+                                {},
+                            ]
 
-                    },
+                        },
 
-                }
+                    }
 
             })
             .then((response) => {
@@ -431,10 +433,17 @@ export default class App extends Component {
         this.setState({ pressed: true, pressed2: false, pressed3: false, pressed4: false});
     }
 
-
-
     getCatalogData = async () => {
+
         // AsyncStorage.removeItem('haveAlreadyShownStarPopup');
+
+        console.log(this.props.item)
+
+        let {cat_id, name} = this.props.item;
+
+        await this.setState({
+            pagetitle:name
+        })
 
         let userToken = await AsyncStorage.getItem('userToken');
         let haveAlreadyShownStarPopup = await AsyncStorage.getItem('haveAlreadyShownStarPopup');
@@ -442,11 +451,11 @@ export default class App extends Component {
 
         // console.log(userToken, "token");
         let current_paginate = this.state.current_paginate;
-
+        // https://svstimeshop2.fvds.ru/api/FilterProductByCategoryId?categoryId=472911
         fetch(
-            `${APP_URL}/CatalogProduct?page=${current_paginate}`,
+            `${APP_URL}/FilterProductByCategoryId?categoryId=${cat_id}&page=${current_paginate}`,
             {
-                method: "GET",
+                method: "POST",
                 headers: {
                     // 'Authorization': AuthStr,
                     'Accept': 'application/json',
@@ -470,11 +479,8 @@ export default class App extends Component {
                     catalogItems: response.data.products.data,
                     loaded: true,
                     ratingPopup: haveAlreadyShownStarPopup ? false : true,
+                    last_page: response.data.products.last_page
                 })
-
-
-
-
 
             })
 
@@ -482,160 +488,15 @@ export default class App extends Component {
 
 
 
-    findInArray = (array, find) => {
-
-
-        // Provided testing method (return element > 4).
-        console.log(array.includes(find), 'dwdwdwdwdw')
-        return array.includes(find)
-
-    }
-
-    removeFromArray = (array, find) => {
-
-        const index = array.indexOf(find);
-        if (index > -1) { // only splice array when item is found
-            array.splice(index, 1); // 2nd parameter means remove one item only
-        }
-
-        return array;
-
-    }
-
-
-    checkSavedFilter = async () => {
-
-       await AsyncStorage.getItem('filterInfo',(err,item) => {
-
-            let filterInfo = item ? JSON.parse(item) : {}
-
-            if (Object.keys(filterInfo).length === 0) {
-
-                this.getCatalogData();
-                console.log("no info", 'filter infos from storge')
-
-            } else {
-
-                console.log(filterInfo, 'filterInfofilterInfo')
-
-                if (filterInfo.hasOwnProperty("min_price")) {
-                    this.setState({
-                        minPrice: filterInfo.min_price
-
-                    })
-                }
-
-
-                if (filterInfo.hasOwnProperty("max_price")) {
-                    this.setState({
-                        maxPrice: filterInfo.max_price
-                    })
-                }
-                if (filterInfo.hasOwnProperty("gender")) {
-                    this.setState({
-                        sort_by_gender: filterInfo.gender
-                    })
-                }
-                if (filterInfo.hasOwnProperty("Mechanism")) {
-                    this.setState({
-                        sort_by_mechanism: filterInfo.Mechanism
-                    })
-                }
-                if (filterInfo.hasOwnProperty("Frame")) {
-                    this.setState({
-                        sort_by_frame: filterInfo.Frame
-                    })
-                }
-                if (filterInfo.hasOwnProperty("Bracelet")) {
-                    this.setState({
-                        sort_by_bracelet: filterInfo.Bracelet
-                    })
-                }
-                if (filterInfo.hasOwnProperty("Waterproof")) {
-                    this.setState({
-                        sort_by_waterproof: filterInfo.Waterproof
-                    })
-                }
-                if (filterInfo.hasOwnProperty("Glass")) {
-                    this.setState({
-                        sort_by_glass: filterInfo.Glass
-                    })
-                }
-                if (filterInfo.hasOwnProperty("Alarm")) {
-                    this.setState({
-                        sort_by_alarm: filterInfo.Alarm
-                    })
-                }
-                if (filterInfo.hasOwnProperty("Calendar")) {
-                    this.setState({
-                        sort_by_calendar: filterInfo.Calendar
-                    })
-                }
-                if (filterInfo.hasOwnProperty("Guarantee")) {
-                    this.setState({
-                        sort_by_guarantee: filterInfo.Guarantee
-                    })
-                }
-                if (filterInfo.hasOwnProperty("Set")) {
-                    this.setState({
-                        sort_by_equipment: filterInfo.Set
-                    })
-                }
-                if (filterInfo.hasOwnProperty("current_paginate_filter")) {
-                    this.setState({
-                        current_paginate_filter: filterInfo.current_paginate_filter
-                    })
-                }
-
-
-                setTimeout(() => {
-                    this.useFilter()
-                }, 2000)
-
-
-
-
-                console.log(filterInfo, 'filter infos from storge')
-
-
-            }
-            //
-            // this.setState({
-            //     show_basket_count: true,
-            //     basket_count: newCountsOfProductsInBasket
-            // })
-
-
-        })
-
-    }
-
-
-
-
     componentDidMount() {
         const { navigation } = this.props;
-        // alert('catalog');
-
         // AsyncStorage.clear();
-        // this.getCatalogData();
         this.checkAuthUser();
-        this.checkSavedFilter()
-        this.checkBasketCount();
-        this.checkFavouritesProductsCount();
-
+        this.getCatalogData();
 
         this.focusListener = navigation.addListener("focus", () => {
-
-            // AsyncStorage.removeItem('filterInfo')
-
-            // this.getCatalogData();
-
             this.checkAuthUser();
-            this.checkSavedFilter()
-            this.checkBasketCount();
-            this.checkFavouritesProductsCount();
-
+            this.getCatalogData();
         });
     }
     componentWillUnmount() {
@@ -645,344 +506,6 @@ export default class App extends Component {
             // console.log('Bum END')
         }
 
-    }
-
-
-    checkBasketCount = async () => {
-
-        let userToken = await AsyncStorage.getItem('userToken');
-        let AuthStr = 'Bearer ' + userToken;
-
-        fetch(
-            `${APP_URL}/ProductBasketCount`,
-            {
-                method: "GET",
-                headers: {
-                    'Authorization': AuthStr,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-            }
-        ).then((response) => response.json())
-            .catch((error) => {
-                console.log("ERROR " , error)
-            })
-            .then((response) => {
-
-                // console.log(response, "product_count_ggggg");
-
-                if (response.hasOwnProperty("status")) {
-                    if (response.status === true) {
-                        if (response.data.hasOwnProperty('ProductBasketCount')) {
-                            let count_number = response.data.ProductBasketCount;
-
-                            this.setState({
-                                show_basket_count: count_number > 0 ? true : false,
-                                basket_count: count_number,
-
-                            })
-                        }
-                    }
-                }
-
-
-
-
-
-
-
-            })
-
-
-
-    }
-
-
-
-    useFilter = async () => {
-
-
-        let filter_info = {};
-        let userToken = await AsyncStorage.getItem('userToken');
-        let AuthStr = 'Bearer ' + userToken;
-
-        let current_paginate_filter = this.state.current_paginate_filter;
-        let { minPrice, maxPrice, sort_by_gender, sort_by_mechanism, sort_by_frame, sort_by_bracelet, sort_by_additional_functions, sort_by_waterproof, sort_by_glass, sort_by_alarm, sort_by_calendar, sort_by_guarantee, sort_by_equipment} = this.state
-        let filterData = {};
-
-        if (minPrice != "") {
-             filterData.min_price = minPrice;
-            filter_info.min_price = minPrice
-        }
-        if (maxPrice != "") {
-            filterData.max_price = maxPrice;
-            filter_info.max_price = maxPrice
-        }
-
-        if (sort_by_gender != "" ){
-            filterData.gender = sort_by_gender;
-            filter_info.gender = sort_by_gender;
-        }
-
-
-        if (sort_by_mechanism != "" ){
-            filterData.Mechanism = sort_by_mechanism;
-            filter_info.Mechanism = sort_by_mechanism
-        }
-
-        if (sort_by_frame.length > 0 ) {
-            let frame = "";
-            filter_info.Frame = sort_by_frame;
-
-            if (sort_by_frame.length == 1 ) {
-                frame = sort_by_frame[0];
-            } else {
-                 frame = sort_by_frame.join("^");
-            }
-
-            filterData.Frame = frame;
-
-        }
-
-
-        if (sort_by_bracelet.length > 0) {
-
-            let bracelet = "";
-            filter_info.Bracelet = sort_by_bracelet;
-
-            if (sort_by_bracelet.length == 1 ) {
-                bracelet = sort_by_bracelet[0];
-            } else {
-                bracelet = sort_by_bracelet.join("^");
-            }
-
-
-            filterData.Bracelet = bracelet
-        }
-
-        if (sort_by_waterproof.length > 0) {
-
-            let waterproof = "";
-
-            filter_info.Waterproof = sort_by_waterproof;
-
-            if (sort_by_waterproof.length == 1 ) {
-                waterproof = sort_by_waterproof[0];
-            } else {
-                waterproof = sort_by_waterproof.join("^");
-            }
-
-
-            filterData.Waterproof = waterproof
-        }
-
-        if (sort_by_glass.length > 0) {
-
-            let glass = "";
-            filter_info.Glass = sort_by_glass;
-
-
-            if (sort_by_glass.length == 1 ) {
-                glass = sort_by_glass[0];
-            } else {
-                glass = sort_by_glass.join("^");
-            }
-
-
-            filterData.Glass = glass
-        }
-
-        if (sort_by_alarm.length > 0) {
-
-            let alarm = "";
-
-            filter_info.Alarm = sort_by_alarm;
-
-            if (sort_by_alarm.length == 1 ) {
-                alarm = sort_by_alarm[0];
-            } else {
-                alarm = sort_by_alarm.join("^");
-            }
-
-
-            filterData.Alarm = alarm
-        }
-        if (sort_by_additional_functions.length > 0) {
-
-            let additional_functions = "";
-
-            filter_info.Additional_functions = sort_by_additional_functions;
-
-            if (sort_by_additional_functions.length == 1 ) {
-                additional_functions = sort_by_additional_functions[0];
-            } else {
-                additional_functions = sort_by_additional_functions.join("^");
-            }
-
-
-            filterData.Additional_functions = additional_functions
-        }
-
-        if (sort_by_calendar.length > 0) {
-
-            let calendar = "";
-
-            filter_info.Calendar = sort_by_calendar;
-
-            if (sort_by_calendar.length == 1 ) {
-                calendar = sort_by_calendar[0];
-            } else {
-                calendar = sort_by_calendar.join("^");
-            }
-
-
-            filterData.Calendar = calendar
-        }
-
-        if (sort_by_guarantee.length > 0) {
-
-            let guarantee = "";
-
-            filter_info.Guarantee = sort_by_guarantee;
-
-            if (sort_by_guarantee.length == 1 ) {
-                guarantee = sort_by_guarantee[0];
-            } else {
-                guarantee = sort_by_guarantee.join("^");
-            }
-
-
-            filterData.Guarantee = guarantee
-        }
-        if (sort_by_equipment.length > 0) {
-
-            let equipment = "";
-
-            filter_info.Set = sort_by_equipment;
-
-            if (sort_by_equipment.length == 1 ) {
-                equipment = sort_by_equipment[0];
-            } else {
-                equipment = sort_by_equipment.join("^");
-            }
-
-            filterData.Set = equipment
-
-        }
-
-
-        console.log(filterData, "filter bbbbbbbbbbbbb");
-        filter_info.current_paginate_filter = current_paginate_filter;
-        console.log(filter_info, "filter Info")
-
-
-        fetch(
-            `${APP_URL}/FilterProduct?pageNumber=${current_paginate_filter}`,
-            {
-                method: "POST",
-                headers: {
-                    'Authorization': AuthStr,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(filterData)
-            }
-        ).then((response) => response.json())
-            .catch((error) => {
-                console.log("ERROR " , error)
-            })
-            .then((response) => {
-
-
-                let filter_response = response.data.search_result;
-                let filter_images = response.data.Product_Image;
-
-                // console.log(filter_response, "filter_response");
-                // console.log(filter_images, "filter_images");
-
-                // return false
-
-                // console.log(filter_images, 'filter_images')
-                // return false;
-
-
-
-                for (const product_item in filter_response) {
-
-                    let product_id = filter_response[product_item].product_id;
-
-                    for (const image_item in filter_images) {
-
-                        // console.log(filter_images[image_item], 'filter_images[image_item]')
-
-                        let image_product_id = filter_images[image_item][0].productid;
-                        let image_product_picture = filter_images[image_item][0].picture;
-                        if (product_id == image_product_id ) {
-                            filter_response[product_item].product_image = [{picture: image_product_picture}]
-                            break;
-                        }
-                    }
-                }
-
-
-
-                this.setState({
-
-                    filter_used_or_not: true,
-                    loaded: true,
-                    showFilterModal: false
-                })
-
-                if (filter_response.length > 0) {
-                    this.setState({
-                        catalogItems: filter_response,
-                        hide_next_button: false,
-                    })
-                } else  {
-
-                    this.setState({
-                        catalogItems: [],
-                        hide_next_button: true,
-                    })
-                }
-
-
-                  AsyncStorage.setItem('filterInfo', JSON.stringify(filter_info) );
-
-
-            })
-
-    }
-
-
-
-
-    clearFilter = async () => {
-
-        await AsyncStorage.removeItem('filterInfo');
-
-        await this.setState({
-            minPrice: "",
-            maxPrice: "",
-            sort_by_gender: "",
-            sort_by_mechanism: "",
-            sort_by_frame: [],
-            sort_by_bracelet: [],
-            sort_by_waterproof: [],
-            sort_by_glass: [],
-            sort_by_alarm: [],
-            sort_by_calendar: [],
-            sort_by_guarantee: [],
-            sort_by_equipment: [],
-            sort_by_additional_functions: [],
-            current_paginate_filter: 1,
-            current_paginate: 1,
-            showFilterModal: false,
-            filter_used_or_not: false,
-
-        })
-
-        await this.getCatalogData();
     }
 
 
@@ -1022,37 +545,6 @@ export default class App extends Component {
 
 
 
-    getNextFilterData = async () => {
-        await this.setState({
-            loaded: false
-        })
-        let current_paginate_filter = this.state.current_paginate_filter;
-        await this.setState({
-            current_paginate_filter: current_paginate_filter + 1,
-        })
-        this.useFilter();
-
-    }
-
-    getPrevFilterData = async () => {
-
-        let current_paginate_filter = this.state.current_paginate_filter;
-        let new_current_page = current_paginate_filter - 1;
-
-        if (new_current_page > 0) {
-
-            await this.setState({
-                current_paginate_filter: new_current_page,
-                loaded: false
-            })
-            this.useFilter();
-        } else  {
-            await this.setState({
-                loaded: true
-            })
-        }
-
-    }
 
     redirectToCardProduct = (item) => {
         this.props.navigation.navigate("CardProduct", {
@@ -1186,32 +678,32 @@ export default class App extends Component {
 
 
                 if (response.hasOwnProperty("status")) {
-                     if (response.status === true) {
-                         this.setState({
-                             successReviewMessage: true,
-                             lowRatingPopup: false,
-                             ratingPopup: false,
-                             showFilterModal: false,
-                             highRatingPopup: false,
-                             marketplacePopup: false,
-                             notYetProduct: false,
-                             reviewOnlineShopUrlPopup: false,
-                             reviewOnlineShopSuccess: false,
-                             makeReviewTypePopup: false,
-                             makeReviewInputPopup: false,
-                             makeReviewSuccessPopup: false,
-                             reviewError: false,
-                             reviewErrorText: '',
+                    if (response.status === true) {
+                        this.setState({
+                            successReviewMessage: true,
+                            lowRatingPopup: false,
+                            ratingPopup: false,
+                            showFilterModal: false,
+                            highRatingPopup: false,
+                            marketplacePopup: false,
+                            notYetProduct: false,
+                            reviewOnlineShopUrlPopup: false,
+                            reviewOnlineShopSuccess: false,
+                            makeReviewTypePopup: false,
+                            makeReviewInputPopup: false,
+                            makeReviewSuccessPopup: false,
+                            reviewError: false,
+                            reviewErrorText: '',
 
-                         })
+                        })
 
-                     }  else {
+                    }  else {
 
-                         this.setState({
-                             reviewError: true,
-                             reviewErrorText: 'Поле обязательно для заполнения!',
-                         })
-                     }
+                        this.setState({
+                            reviewError: true,
+                            reviewErrorText: 'Поле обязательно для заполнения!',
+                        })
+                    }
                 }
 
 
@@ -1226,22 +718,22 @@ export default class App extends Component {
 
 
     takeUrlType = (urlType) => {
-         this.setState({
-             reviewOnlineShopUrlType: urlType,
-             reviewOnlineShopUrlPopup: true,
+        this.setState({
+            reviewOnlineShopUrlType: urlType,
+            reviewOnlineShopUrlPopup: true,
 
-             marketplacePopup: false,
-             highRatingPopup: false,
-             lowRatingPopup: false,
-             ratingPopup: false,
-             showFilterModal: false,
-             notYetProduct: false,
-             successReviewMessage: false,
-             reviewOnlineShopSuccess: false,
-             makeReviewTypePopup: false,
-             makeReviewInputPopup: false,
-             makeReviewSuccessPopup: false,
-         })
+            marketplacePopup: false,
+            highRatingPopup: false,
+            lowRatingPopup: false,
+            ratingPopup: false,
+            showFilterModal: false,
+            notYetProduct: false,
+            successReviewMessage: false,
+            reviewOnlineShopSuccess: false,
+            makeReviewTypePopup: false,
+            makeReviewInputPopup: false,
+            makeReviewSuccessPopup: false,
+        })
     }
 
 
@@ -1258,86 +750,86 @@ export default class App extends Component {
         let url    = this.state.reviewOnlineShopUrl;
         let url_type = this.state.reviewOnlineShopUrlType;
 
-         if (url == "") {
-               this.setState({
-                   reviewOnlineShopUrlError: true,
-                   reviewOnlineShopUrlErrorText: "Поле обязательно!",
-               })
-         } else {
-             this.setState({
-                 reviewOnlineShopUrlError: false,
-                 reviewOnlineShopUrlErrorText: "",
-             })
-             fetch(
-                 `${APP_URL}/createBonusComment`,
-                 {
-                     method: "POST",
-                     headers: {
-                         'Authorization': AuthStr,
-                         'Accept': 'application/json',
-                         'Content-Type': 'application/json',
-                     },
-                     body: JSON.stringify({
-                         url: url,
-                         url_type: url_type,
-                     })
-                 }
-             ).then((response) => response.json())
-                 .catch((error) => {
-                     console.log("ERROR " , error)
+        if (url == "") {
+            this.setState({
+                reviewOnlineShopUrlError: true,
+                reviewOnlineShopUrlErrorText: "Поле обязательно!",
+            })
+        } else {
+            this.setState({
+                reviewOnlineShopUrlError: false,
+                reviewOnlineShopUrlErrorText: "",
+            })
+            fetch(
+                `${APP_URL}/createBonusComment`,
+                {
+                    method: "POST",
+                    headers: {
+                        'Authorization': AuthStr,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        url: url,
+                        url_type: url_type,
+                    })
+                }
+            ).then((response) => response.json())
+                .catch((error) => {
+                    console.log("ERROR " , error)
 
-                 })
-                 .then((response) => {
-                     console.log(response, 'link')
-
-
-
-
-                     if (response.hasOwnProperty("status")) {
-                         if (response.status === true) {
-                             if (response.data.message === true) {
-                                 this.setState({
-                                     reviewOnlineShopSuccess: true,
-                                     reviewOnlineShopUrlPopup: false,
-                                     marketplacePopup: false,
-                                     highRatingPopup: false,
-                                     lowRatingPopup: false,
-                                     ratingPopup: false,
-                                     showFilterModal: false,
-                                     notYetProduct: false,
-                                     successReviewMessage: false,
-                                     makeReviewTypePopup: false,
-                                     makeReviewInputPopup: false,
-                                     makeReviewSuccessPopup: false,
-                                 })
-                             }
-
-                             if (response.data.message == "Have you sent") {
-                                 this.setState({
-                                     reviewOnlineShopUrlError: true,
-                                     reviewOnlineShopUrlErrorText: 'На данный момент у вас уже есть ссылка на модерации!'
-
-                                 })
-                             }
-                         } else {
-                             if (response.data.message === "url_type not url") {
-                                 this.setState({
-                                     reviewOnlineShopUrlError: true,
-                                     reviewOnlineShopUrlErrorText: 'Не верный формат, ведите коректную ссылку!'
-                                 })
-                             }
-                         }
+                })
+                .then((response) => {
+                    console.log(response, 'link')
 
 
 
-                     }
+
+                    if (response.hasOwnProperty("status")) {
+                        if (response.status === true) {
+                            if (response.data.message === true) {
+                                this.setState({
+                                    reviewOnlineShopSuccess: true,
+                                    reviewOnlineShopUrlPopup: false,
+                                    marketplacePopup: false,
+                                    highRatingPopup: false,
+                                    lowRatingPopup: false,
+                                    ratingPopup: false,
+                                    showFilterModal: false,
+                                    notYetProduct: false,
+                                    successReviewMessage: false,
+                                    makeReviewTypePopup: false,
+                                    makeReviewInputPopup: false,
+                                    makeReviewSuccessPopup: false,
+                                })
+                            }
+
+                            if (response.data.message == "Have you sent") {
+                                this.setState({
+                                    reviewOnlineShopUrlError: true,
+                                    reviewOnlineShopUrlErrorText: 'На данный момент у вас уже есть ссылка на модерации!'
+
+                                })
+                            }
+                        } else {
+                            if (response.data.message === "url_type not url") {
+                                this.setState({
+                                    reviewOnlineShopUrlError: true,
+                                    reviewOnlineShopUrlErrorText: 'Не верный формат, ведите коректную ссылку!'
+                                })
+                            }
+                        }
 
 
 
-                 })
+                    }
 
 
-         }
+
+                })
+
+
+        }
 
 
 
@@ -1424,41 +916,41 @@ export default class App extends Component {
                     console.log(response, 'link')
 
                     if (response.hasOwnProperty("status")) {
-                            if (response.status === true) {
-                                if (response.data.message === true) {
-                                    this.setState({
-                                        makeReviewTypePopupUrlError: false,
-                                        makeReviewTypePopupUrlErrorText: '',
-                                        makeReviewSuccessPopup: true,
+                        if (response.status === true) {
+                            if (response.data.message === true) {
+                                this.setState({
+                                    makeReviewTypePopupUrlError: false,
+                                    makeReviewTypePopupUrlErrorText: '',
+                                    makeReviewSuccessPopup: true,
 
-                                        makeReviewInputPopup: false,
-                                        makeReviewTypePopup: false,
-                                        reviewOnlineShopSuccess: false,
-                                        reviewOnlineShopUrlPopup: false,
-                                        marketplacePopup: false,
-                                        highRatingPopup: false,
-                                        lowRatingPopup: false,
-                                        ratingPopup: false,
-                                        showFilterModal: false,
-                                        notYetProduct: false,
-                                        successReviewMessage: false,
-                                    })
-                                }
-
-                                if (response.data.message == "Have you sent") {
-                                    this.setState({
-                                        makeReviewTypePopupUrlError: true,
-                                        makeReviewTypePopupUrlErrorText: 'На данный момент у вас уже есть ссылка на модерации!'
-                                    })
-                                }
-                            } else {
-                                if (response.data.message === "url_type not url") {
-                                    this.setState({
-                                        makeReviewTypePopupUrlError: true,
-                                        makeReviewTypePopupUrlErrorText: 'Не верный формат, ведите коректную ссылку!'
-                                    })
-                                }
+                                    makeReviewInputPopup: false,
+                                    makeReviewTypePopup: false,
+                                    reviewOnlineShopSuccess: false,
+                                    reviewOnlineShopUrlPopup: false,
+                                    marketplacePopup: false,
+                                    highRatingPopup: false,
+                                    lowRatingPopup: false,
+                                    ratingPopup: false,
+                                    showFilterModal: false,
+                                    notYetProduct: false,
+                                    successReviewMessage: false,
+                                })
                             }
+
+                            if (response.data.message == "Have you sent") {
+                                this.setState({
+                                    makeReviewTypePopupUrlError: true,
+                                    makeReviewTypePopupUrlErrorText: 'На данный момент у вас уже есть ссылка на модерации!'
+                                })
+                            }
+                        } else {
+                            if (response.data.message === "url_type not url") {
+                                this.setState({
+                                    makeReviewTypePopupUrlError: true,
+                                    makeReviewTypePopupUrlErrorText: 'Не верный формат, ведите коректную ссылку!'
+                                })
+                            }
+                        }
 
 
 
@@ -1534,19 +1026,19 @@ export default class App extends Component {
         }
 
 
-       if (!this.state.loaded) {
-           return (
-               <View style={{width: '100%', height: '100%', backgroundColor: '#ffffff', alignSelf: 'center', alignItems: 'center', justifyContent: 'center'}}>
-                   <Image style={{width: 300}} source={require('../../assets/images/band_rate_logo.png')} />
-               </View>
-           )
-       }
+        if (!this.state.loaded) {
+            return (
+                <View style={{width: '100%', height: '100%', backgroundColor: '#ffffff', alignSelf: 'center', alignItems: 'center', justifyContent: 'center'}}>
+                    <Image style={{width: 300}} source={require('../../assets/images/band_rate_logo.png')} />
+                </View>
+            )
+        }
 
 
 
 
-       // RATING POPUP
-       if (this.state.ratingPopup && this.state.isAuthUser ) {
+        // RATING POPUP
+        if (this.state.ratingPopup && this.state.isAuthUser ) {
             return (
                 <View style={styles.rating_modal}>
                     <StatusBar style="dark" />
@@ -1575,676 +1067,79 @@ export default class App extends Component {
 
                 </View>
             )
-       }
-
-
-       // FILTER POPUP
-        if (this.state.showFilterModal) {
-            return (
-                <BlurView intensity={50} tint="dark" style={[styles.blurContainer,{width: '100%', height: windowHeight ,position:'absolute', top: 0, left: 0,}]}>
-                    <TouchableOpacity style={{width: '100%', height: '100%', alignItems: 'flex-end', justifyContent: 'flex-end',}}   onPress={() => {this.setState({showFilterModal: false})}}>
-
-                        <TouchableHighlight style={styles.filter_modal_wrapper}>
-
-
-                            <View style={styles.filter_modal_child_wrapper}>
-                                <View style={styles.filter_modal_title_icon_wrapper}>
-                                    <Text  style={styles.filter_modal_title}>Фильтр</Text>
-                                    <TouchableOpacity style={styles.filter_modal_close_btn} onPress={()=>{this.setState({showFilterModal: false})}}>
-                                        <Svg xmlns="http://www.w3.org/2000/svg" width={21} height={21} viewBox="0 0 19 19" fill="none">
-                                            <Path d="M9.5 9.5L1.751 1.693m-.058 15.556L9.5 9.5l-7.807 7.749zM9.5 9.5l7.808-7.749L9.5 9.5zm0 0l7.749 7.808L9.5 9.5z" stroke="#000" strokeWidth={2} strokeLinecap="round"/>
-                                        </Svg>
-                                    </TouchableOpacity>
-
-                                </View>
-                                <ScrollView  style={styles.filter_modal_inputs_main_wrapper} nestedScrollEnabled = {true}>
-
-                                    <TouchableWithoutFeedback>
-                                        <View style={styles.sort_radio_input}>
-
-                                            {/*<View style={styles.sort_radio_input}>*/}
-                                            {/*    <Text style={styles.sort_radio_input_main_title}>Пол</Text>*/}
-
-                                            {/*    <ScrollView style={styles.sort_radio_input_child_scroll} horizontal={true} nestedScrollEnabled = {true}>*/}
-                                            {/*        <TouchableOpacity*/}
-                                            {/*            style={[styles.inputRadio, this.state.sort_by_gender == 'мужские' ? styles.activeInputRadioBorder : {}, {marginRight: 15}]}*/}
-                                            {/*            onPress={()=> {*/}
-                                            {/*                this.setState({*/}
-                                            {/*                    sort_by_gender: 'мужские',*/}
-
-                                            {/*                })*/}
-                                            {/*            }}*/}
-
-                                            {/*        >*/}
-                                            {/*            <Text style={[styles.sort_radio_input_title, this.state.sort_by_gender == 'мужские' ? styles.activeInputRadioColor : {}]}>Мужские</Text>*/}
-                                            {/*        </TouchableOpacity>*/}
-
-
-                                            {/*        <TouchableOpacity*/}
-                                            {/*            style={[styles.inputRadio, this.state.sort_by_gender == 'женские' ? styles.activeInputRadioBorder : {},{marginRight: 15}]}*/}
-                                            {/*            onPress={()=> {*/}
-                                            {/*                this.setState({*/}
-                                            {/*                    sort_by_gender: 'женские',*/}
-
-                                            {/*                })*/}
-                                            {/*            }}*/}
-
-                                            {/*        >*/}
-                                            {/*            <Text style={[styles.sort_radio_input_title, this.state.sort_by_gender == 'женские' ? styles.activeInputRadioColor : {}]}>Женские</Text>*/}
-                                            {/*        </TouchableOpacity>*/}
-
-
-                                            {/*        <TouchableOpacity*/}
-                                            {/*            style={[styles.inputRadio, this.state.sort_by_gender == 'Унисекс' ? styles.activeInputRadioBorder : {}]}*/}
-                                            {/*            onPress={()=> {*/}
-                                            {/*                this.setState({*/}
-                                            {/*                    sort_by_gender: 'Унисекс',*/}
-
-                                            {/*                })*/}
-                                            {/*            }}*/}
-
-                                            {/*        >*/}
-                                            {/*            <Text style={[styles.sort_radio_input_title, this.state.sort_by_gender == 'Унисекс' ? styles.activeInputRadioColor : {}]}>Унисекс</Text>*/}
-                                            {/*        </TouchableOpacity>*/}
-                                            {/*    </ScrollView>*/}
-
-                                            {/*</View>*/}
-
-
-                                            <View style={styles.filter_modal_input_field_wrapper}>
-                                                <Text style={styles.filter_modal_input_title}>Цена</Text>
-                                                <View style={styles.filter_modal_input_field_child}>
-                                                    <TextInput
-                                                        style={styles.filter_modal_input_field}
-                                                        onChangeText={(val) => this.setState({minPrice: val})}
-                                                        value={this.state.minPrice}
-                                                        placeholder="Мин."
-                                                        keyboardType="numeric"
-                                                        placeholderTextColor="#000000"
-                                                    />
-                                                    <View style={styles.filter_modal_input_icon}>
-                                                        <Svg xmlns="http://www.w3.org/2000/svg" width={23} height={2} viewBox="0 0 23 2" fill="none">
-                                                            <Path d="M1 1h21" stroke="#000" strokeWidth={2} strokeLinecap="round" />
-                                                        </Svg>
-                                                    </View>
-
-
-                                                    <TextInput
-                                                        style={styles.filter_modal_input_field}
-                                                        onChangeText={(val) => this.setState({maxPrice: val})}
-                                                        value={this.state.maxPrice}
-                                                        keyboardType="numeric"
-                                                        placeholder="Макс."
-                                                        placeholderTextColor="#000000"
-                                                    />
-                                                </View>
-                                            </View>
-                                            {/*<View style={[styles.sort_radio_input, {paddingBottom: 0}]}>*/}
-                                            {/*    <Text style={styles.sort_radio_input_main_title}>Механизм</Text>*/}
-
-                                            {/*    <View style={styles.sort_radio_input_child}>*/}
-                                            {/*        <ScrollView style={styles.sort_radio_input_child_scroll} horizontal={true}>*/}
-                                            {/*            <TouchableOpacity*/}
-                                            {/*                style={[styles.inputRadio, this.state.sort_by_mechanism == "Кварцевый" ? styles.activeInputRadioBorder : {}, {marginRight: 15}]}*/}
-                                            {/*                onPress={()=> {*/}
-                                            {/*                    this.setState({*/}
-                                            {/*                        sort_by_mechanism: 'Кварцевый',*/}
-                                            {/*                    })*/}
-                                            {/*                }}*/}
-
-                                            {/*            >*/}
-                                            {/*                <Text style={[styles.sort_radio_input_title, this.state.sort_by_mechanism == "Кварцевый" ? styles.activeInputRadioColor : {}]}>Кварцевый</Text>*/}
-                                            {/*            </TouchableOpacity>*/}
-                                            {/*            <TouchableOpacity*/}
-                                            {/*                style={[styles.inputRadio, this.state.sort_by_mechanism == "Электронный" ? styles.activeInputRadioBorder : {}, {marginRight: 15}]}*/}
-                                            {/*                onPress={()=> {*/}
-                                            {/*                    this.setState({*/}
-                                            {/*                        sort_by_mechanism: 'Электронный',*/}
-
-                                            {/*                    })*/}
-                                            {/*                }}*/}
-
-                                            {/*            >*/}
-                                            {/*                <Text style={[styles.sort_radio_input_title, this.state.sort_by_mechanism == "Электронный" ? styles.activeInputRadioColor : {}]}>Электронный</Text>*/}
-                                            {/*            </TouchableOpacity>*/}
-
-                                            {/*        </ScrollView>*/}
-
-                                            {/*    </View>*/}
-
-
-
-
-
-                                            {/*</View>*/}
-                                            <View style={styles.sort_radio_input}>
-                                                <Text style={styles.sort_radio_input_main_title}>Корпус</Text>
-
-                                                {/*<ScrollView style={styles.sort_radio_input_child}>*/}
-                                                <ScrollView style={styles.sort_radio_input_child_scroll} horizontal={true}>
-
-
-                                                    {this.state.all_frames_array.map((item, index) => {
-
-                                                        return (
-                                                            <TouchableOpacity
-                                                                key={index}
-                                                                style={[styles.inputRadio, this.state.sort_by_frame.includes( item) ? styles.activeInputRadioBorder : {}, {marginRight: 15}]}
-                                                                onPress={()=> {
-
-                                                                    if(this.state.sort_by_frame.includes( item)) {
-
-                                                                        let sort_by_frame = this.removeFromArray(this.state.sort_by_frame, item);
-                                                                        this.setState({
-                                                                            sort_by_frame: sort_by_frame
-                                                                        })
-                                                                    } else {
-                                                                        let sort_by_frame = this.state.sort_by_frame;
-
-                                                                        sort_by_frame.push(item)
-                                                                        this.setState({
-                                                                            sort_by_frame: sort_by_frame
-                                                                        })
-                                                                    }
-
-                                                                }}
-
-                                                            >
-                                                                <Text style={[styles.sort_radio_input_title, this.state.sort_by_frame.includes( item) ? styles.activeInputRadioColor : {}]}>{item}</Text>
-                                                            </TouchableOpacity>
-
-                                                        )
-                                                    })}
-
-
-
-
-
-
-                                                </ScrollView>
-
-
-
-
-
-                                            </View>
-
-
-                                            <View style={[styles.sort_radio_input, {paddingBottom: 0}]}>
-                                                <Text style={styles.sort_radio_input_main_title}>Браслет</Text>
-                                                <ScrollView style={styles.sort_radio_input_child_scroll} horizontal={true}>
-
-
-                                                    {this.state.all_bracelet_array.map((item, index) => {
-
-                                                        return (
-                                                            <TouchableOpacity
-                                                                key={index}
-                                                                style={[styles.inputRadio, this.state.sort_by_bracelet .includes( item) ? styles.activeInputRadioBorder : {}, {marginRight: 15}]}
-                                                                onPress={()=> {
-
-                                                                    if(this.state.sort_by_bracelet.includes( item)) {
-
-                                                                        let sort_by_bracelet = this.removeFromArray(this.state.sort_by_bracelet, item);
-                                                                        this.setState({
-                                                                            sort_by_bracelet: sort_by_bracelet
-                                                                        })
-                                                                    } else {
-                                                                        let sort_by_bracelet = this.state.sort_by_bracelet;
-
-                                                                        sort_by_bracelet.push(item)
-                                                                        this.setState({
-                                                                            sort_by_bracelet: sort_by_bracelet
-                                                                        })
-                                                                    }
-
-                                                                }}
-
-                                                            >
-                                                                <Text style={[styles.sort_radio_input_title, this.state.sort_by_bracelet.includes( item) ? styles.activeInputRadioColor : {}]}>{item}</Text>
-                                                            </TouchableOpacity>
-
-                                                        )
-                                                    })}
-
-
-
-
-
-
-                                                </ScrollView>
-
-                                            </View>
-
-
-
-                                            <View style={[styles.sort_radio_input, {paddingBottom: 0}]}>
-                                                <Text style={styles.sort_radio_input_main_title}>Водозащита</Text>
-                                                <ScrollView style={styles.sort_radio_input_child_scroll} horizontal={true}>
-
-
-                                                    {this.state.all_waterproof_array.map((item, index) => {
-
-                                                        return (
-                                                            <TouchableOpacity
-                                                                key={index}
-                                                                style={[styles.inputRadio, this.state.sort_by_waterproof .includes( item) ? styles.activeInputRadioBorder : {}, {marginRight: 15}]}
-                                                                onPress={()=> {
-
-                                                                    if(this.state.sort_by_waterproof.includes( item)) {
-
-                                                                        let sort_by_waterproof = this.removeFromArray(this.state.sort_by_waterproof, item);
-                                                                        this.setState({
-                                                                            sort_by_waterproof: sort_by_waterproof
-                                                                        })
-                                                                    } else {
-                                                                        let sort_by_waterproof = this.state.sort_by_waterproof;
-
-                                                                        sort_by_waterproof.push(item)
-                                                                        this.setState({
-                                                                            sort_by_waterproof: sort_by_waterproof
-                                                                        })
-                                                                    }
-
-                                                                }}
-
-                                                            >
-                                                                <Text style={[styles.sort_radio_input_title, this.state.sort_by_waterproof.includes( item) ? styles.activeInputRadioColor : {}]}>{item}</Text>
-                                                            </TouchableOpacity>
-
-                                                        )
-                                                    })}
-
-
-
-
-
-
-                                                </ScrollView>
-
-                                            </View>
-
-
-                                            <View style={[styles.sort_radio_input, {paddingBottom: 0}]}>
-                                                <Text style={styles.sort_radio_input_main_title}>Стекло</Text>
-                                                <ScrollView style={styles.sort_radio_input_child_scroll} horizontal={true}>
-
-
-                                                    {this.state.all_glass_array.map((item, index) => {
-
-                                                        return (
-                                                            <TouchableOpacity
-                                                                key={index}
-                                                                style={[styles.inputRadio, this.state.sort_by_glass .includes( item) ? styles.activeInputRadioBorder : {}, {marginRight: 15}]}
-                                                                onPress={()=> {
-
-                                                                    if(this.state.sort_by_glass.includes( item)) {
-
-                                                                        let sort_by_glass = this.removeFromArray(this.state.sort_by_glass, item);
-                                                                        this.setState({
-                                                                            sort_by_glass: sort_by_glass
-                                                                        })
-                                                                    } else {
-                                                                        let sort_by_glass = this.state.sort_by_glass;
-
-                                                                        sort_by_glass.push(item)
-                                                                        this.setState({
-                                                                            sort_by_glass: sort_by_glass
-                                                                        })
-                                                                    }
-
-                                                                }}
-
-                                                            >
-                                                                <Text style={[styles.sort_radio_input_title, this.state.sort_by_glass.includes( item) ? styles.activeInputRadioColor : {}]}>{item}</Text>
-                                                            </TouchableOpacity>
-
-                                                        )
-                                                    })}
-
-
-
-
-
-
-                                                </ScrollView>
-
-                                            </View>
-
-                                            <View style={[styles.sort_radio_input, {paddingBottom: 0}]}>
-                                                <Text style={styles.sort_radio_input_main_title}>Будильник</Text>
-                                                <ScrollView style={styles.sort_radio_input_child_scroll} horizontal={true}>
-
-
-                                                    {this.state.all_alarm_array.map((item, index) => {
-
-                                                        return (
-                                                            <TouchableOpacity
-                                                                key={index}
-                                                                style={[styles.inputRadio, this.state.sort_by_alarm.includes( item) ? styles.activeInputRadioBorder : {}, {marginRight: 15}]}
-                                                                onPress={()=> {
-
-                                                                    if(this.state.sort_by_alarm.includes( item)) {
-
-                                                                        let sort_by_alarm = this.removeFromArray(this.state.sort_by_alarm, item);
-                                                                        this.setState({
-                                                                            sort_by_alarm: sort_by_alarm
-                                                                        })
-                                                                    } else {
-                                                                        let sort_by_alarm = this.state.sort_by_alarm;
-
-                                                                        sort_by_alarm.push(item)
-                                                                        this.setState({
-                                                                            sort_by_alarm: sort_by_alarm
-                                                                        })
-                                                                    }
-
-                                                                }}
-
-                                                            >
-                                                                <Text style={[styles.sort_radio_input_title, this.state.sort_by_alarm.includes( item) ? styles.activeInputRadioColor : {}]}>{item}</Text>
-                                                            </TouchableOpacity>
-
-                                                        )
-                                                    })}
-
-
-
-
-
-
-                                                </ScrollView>
-
-                                            </View>
-
-
-                                            <View style={[styles.sort_radio_input, {paddingBottom: 0}]}>
-                                                <Text style={styles.sort_radio_input_main_title}>Календарь</Text>
-                                                <ScrollView style={styles.sort_radio_input_child_scroll} horizontal={true}>
-
-
-                                                    {this.state.all_calendar_array.map((item, index) => {
-
-                                                        return (
-                                                            <TouchableOpacity
-                                                                key={index}
-                                                                style={[styles.inputRadio, this.state.sort_by_calendar.includes( item) ? styles.activeInputRadioBorder : {}, {marginRight: 15}]}
-                                                                onPress={()=> {
-
-                                                                    if(this.state.sort_by_calendar.includes( item)) {
-
-                                                                        let sort_by_calendar = this.removeFromArray(this.state.sort_by_calendar, item);
-                                                                        this.setState({
-                                                                            sort_by_calendar: sort_by_calendar
-                                                                        })
-                                                                    } else {
-                                                                        let sort_by_calendar = this.state.sort_by_calendar;
-
-                                                                        sort_by_calendar.push(item)
-                                                                        this.setState({
-                                                                            sort_by_calendar: sort_by_calendar
-                                                                        })
-                                                                    }
-
-                                                                }}
-
-                                                            >
-                                                                <Text style={[styles.sort_radio_input_title, this.state.sort_by_calendar.includes( item) ? styles.activeInputRadioColor : {}]}>{item}</Text>
-                                                            </TouchableOpacity>
-
-                                                        )
-                                                    })}
-
-
-
-
-
-
-                                                </ScrollView>
-
-                                            </View>
-
-
-                                            {/*<View style={[styles.sort_radio_input, {paddingBottom: 0}]}>*/}
-                                            {/*    <Text style={styles.sort_radio_input_main_title}>Гарантия</Text>*/}
-                                            {/*    <ScrollView style={styles.sort_radio_input_child_scroll} horizontal={true}>*/}
-
-
-                                            {/*        {this.state.all_guarantee_array.map((item, index) => {*/}
-
-                                            {/*            return (*/}
-                                            {/*                <TouchableOpacity*/}
-                                            {/*                    key={index}*/}
-                                            {/*                    style={[styles.inputRadio, this.state.sort_by_guarantee.includes( item) ? styles.activeInputRadioBorder : {}, {marginRight: 15}]}*/}
-                                            {/*                    onPress={()=> {*/}
-
-                                            {/*                        if(this.state.sort_by_guarantee.includes( item)) {*/}
-
-                                            {/*                            let sort_by_guarantee = this.removeFromArray(this.state.sort_by_guarantee, item);*/}
-                                            {/*                            this.setState({*/}
-                                            {/*                                sort_by_guarantee: sort_by_guarantee*/}
-                                            {/*                            })*/}
-                                            {/*                        } else {*/}
-                                            {/*                            let sort_by_guarantee = this.state.sort_by_guarantee;*/}
-
-                                            {/*                            sort_by_guarantee.push(item)*/}
-                                            {/*                            this.setState({*/}
-                                            {/*                                sort_by_guarantee: sort_by_guarantee*/}
-                                            {/*                            })*/}
-                                            {/*                        }*/}
-
-                                            {/*                    }}*/}
-
-                                            {/*                >*/}
-                                            {/*                    <Text style={[styles.sort_radio_input_title, this.state.sort_by_guarantee.includes( item) ? styles.activeInputRadioColor : {}]}>{item}</Text>*/}
-                                            {/*                </TouchableOpacity>*/}
-
-                                            {/*            )*/}
-                                            {/*        })}*/}
-
-
-
-
-
-
-                                            {/*    </ScrollView>*/}
-
-                                            {/*</View>*/}
-
-                                            {/*<View style={[styles.sort_radio_input, {paddingBottom: 0}]}>*/}
-                                            {/*    <Text style={styles.sort_radio_input_main_title}>Комплектация</Text>*/}
-                                            {/*    <ScrollView style={styles.sort_radio_input_child_scroll} horizontal={true}>*/}
-
-
-                                            {/*        {this.state.all_equipment_array.map((item, index) => {*/}
-
-                                            {/*            return (*/}
-                                            {/*                <TouchableOpacity*/}
-                                            {/*                    key={index}*/}
-                                            {/*                    style={[styles.inputRadio, this.state.sort_by_equipment.includes( item) ? styles.activeInputRadioBorder : {}, {marginRight: 15}]}*/}
-                                            {/*                    onPress={()=> {*/}
-
-                                            {/*                        if(this.state.sort_by_equipment.includes( item)) {*/}
-
-                                            {/*                            let sort_by_equipment = this.removeFromArray(this.state.sort_by_equipment, item);*/}
-                                            {/*                            this.setState({*/}
-                                            {/*                                sort_by_equipment: sort_by_equipment*/}
-                                            {/*                            })*/}
-                                            {/*                        } else {*/}
-                                            {/*                            let sort_by_equipment = this.state.sort_by_equipment;*/}
-
-                                            {/*                            sort_by_equipment.push(item)*/}
-                                            {/*                            this.setState({*/}
-                                            {/*                                sort_by_equipment: sort_by_equipment*/}
-                                            {/*                            })*/}
-                                            {/*                        }*/}
-
-                                            {/*                    }}*/}
-
-                                            {/*                >*/}
-                                            {/*                    <Text style={[styles.sort_radio_input_title, this.state.sort_by_equipment.includes( item) ? styles.activeInputRadioColor : {}]}>{item}</Text>*/}
-                                            {/*                </TouchableOpacity>*/}
-
-                                            {/*            )*/}
-                                            {/*        })}*/}
-
-
-
-
-
-
-                                            {/*    </ScrollView>*/}
-
-                                            {/*</View>*/}
-
-                                            <View style={[styles.sort_radio_input, {paddingBottom: 0}]}>
-                                                <Text style={styles.sort_radio_input_main_title}>Дополнительные функции
-                                                </Text>
-                                                <ScrollView style={styles.sort_radio_input_child_scroll} horizontal={true}>
-
-
-                                                    {this.state.all_additional_functions_array.map((item, index) => {
-
-                                                        return (
-                                                            <TouchableOpacity
-                                                                key={index}
-                                                                style={[styles.inputRadio, this.state.sort_by_additional_functions.includes( item) ? styles.activeInputRadioBorder : {}, {marginRight: 15}]}
-                                                                onPress={()=> {
-
-                                                                    if(this.state.sort_by_additional_functions.includes( item)) {
-
-                                                                        let sort_by_additional_functions = this.removeFromArray(this.state.sort_by_additional_functions, item);
-                                                                        this.setState({
-                                                                            sort_by_additional_functions: sort_by_additional_functions
-                                                                        })
-                                                                    } else {
-                                                                        let sort_by_additional_functions = this.state.sort_by_additional_functions;
-
-                                                                        sort_by_additional_functions.push(item)
-                                                                        this.setState({
-                                                                            sort_by_additional_functions: sort_by_additional_functions
-                                                                        })
-                                                                    }
-
-                                                                }}
-
-                                                            >
-                                                                <Text style={[styles.sort_radio_input_title, this.state.sort_by_additional_functions.includes( item) ? styles.activeInputRadioColor : {}]}>{item == 'кислорода в крови' ? 'Измерение кислорода в крови' : item }</Text>
-                                                            </TouchableOpacity>
-
-                                                        )
-                                                    })}
-
-
-
-
-
-
-                                                </ScrollView>
-
-                                            </View>
-
-
-
-                                            <View style={styles.filter_modal_buttons_wrapper}>
-                                                <TouchableOpacity style={styles.filter_modal_reset_button} onPress={() => {this.clearFilter()}}>
-                                                    <Text style={styles.filter_modal_reset_button_text}>Сбросить</Text>
-                                                </TouchableOpacity>
-
-                                                <TouchableOpacity style={styles.filter_modal_apply_button} onPress={() => {this.useFilter()}}>
-                                                    <Text style={styles.filter_modal_apply_button_text}>Применить</Text>
-                                                </TouchableOpacity>
-                                            </View>
-
-
-                                        </View>
-
-                                    </TouchableWithoutFeedback>
-                                </ScrollView>
-                            </View>
-
-
-                        </TouchableHighlight>
-
-                    </TouchableOpacity>
-                </BlurView>
-            )
         }
-
 
         // LOW RATING POPUP
         if (this.state.lowRatingPopup) {
-           return (
-               <View style={styles.low_rating_modal}>
-                   <StatusBar style="dark" />
-                   <View style={styles.low_rating_modal_wrapper}>
-                       <View style={styles.low_rating_header}>
-                           {/*<TouchableOpacity style={styles.high_rating_back_btn} onPress={() => {this.redirectToRatingProduct()}}>*/}
-                           {/*    <Svg*/}
-                           {/*        xmlns="http://www.w3.org/2000/svg"*/}
-                           {/*        width={35}*/}
-                           {/*        height={35}*/}
-                           {/*        viewBox="0 0 35 35"*/}
-                           {/*        fill="none"*/}
+            return (
+                <View style={styles.low_rating_modal}>
+                    <StatusBar style="dark" />
+                    <View style={styles.low_rating_modal_wrapper}>
+                        <View style={styles.low_rating_header}>
+                            {/*<TouchableOpacity style={styles.high_rating_back_btn} onPress={() => {this.redirectToRatingProduct()}}>*/}
+                            {/*    <Svg*/}
+                            {/*        xmlns="http://www.w3.org/2000/svg"*/}
+                            {/*        width={35}*/}
+                            {/*        height={35}*/}
+                            {/*        viewBox="0 0 35 35"*/}
+                            {/*        fill="none"*/}
 
-                           {/*    >*/}
-                           {/*        <Path*/}
-                           {/*            d="M20.169 27.708a1.458 1.458 0 01-1.138-.54l-7.043-8.75a1.458 1.458 0 010-1.851l7.291-8.75a1.46 1.46 0 112.246 1.866L15.006 17.5l6.3 7.817a1.458 1.458 0 01-1.137 2.391z"*/}
-                           {/*            fill="#000"*/}
-                           {/*        />*/}
-                           {/*    </Svg>*/}
-                           {/*</TouchableOpacity>*/}
-                           <Text style={styles.low_rating_title}>
-                               Спасибо за вашу
-                               оценку
-                           </Text>
-                       </View>
-                       <ScrollView style={styles.low_rating_page_main}>
-                           <Text style={styles.low_rating_title2}>
-                               Ваше мнение ценно для нас.Напишите пожалуйста чем вам не понравился товар
-                           </Text>
-                           <View style={styles.low_rating_review_input_wrapper}>
-                               <TextInput
-                                   style={styles.low_rating_review_input_field}
-                                   onChangeText={(val) => this.setState({review: val})}
-                                   value={this.state.review}
-                                   placeholder="Отзыв..."
-                                   placeholderTextColor="#000000"
-                                   multiline
-                                   numberOfLines={4}
+                            {/*    >*/}
+                            {/*        <Path*/}
+                            {/*            d="M20.169 27.708a1.458 1.458 0 01-1.138-.54l-7.043-8.75a1.458 1.458 0 010-1.851l7.291-8.75a1.46 1.46 0 112.246 1.866L15.006 17.5l6.3 7.817a1.458 1.458 0 01-1.137 2.391z"*/}
+                            {/*            fill="#000"*/}
+                            {/*        />*/}
+                            {/*    </Svg>*/}
+                            {/*</TouchableOpacity>*/}
+                            <Text style={styles.low_rating_title}>
+                                Спасибо за вашу
+                                оценку
+                            </Text>
+                        </View>
+                        <ScrollView style={styles.low_rating_page_main}>
+                            <Text style={styles.low_rating_title2}>
+                                Ваше мнение ценно для нас.Напишите пожалуйста чем вам не понравился товар
+                            </Text>
+                            <View style={styles.low_rating_review_input_wrapper}>
+                                <TextInput
+                                    style={styles.low_rating_review_input_field}
+                                    onChangeText={(val) => this.setState({review: val})}
+                                    value={this.state.review}
+                                    placeholder="Отзыв..."
+                                    placeholderTextColor="#000000"
+                                    multiline
+                                    numberOfLines={4}
 
-                               />
-                               {this.state.reviewError &&
+                                />
+                                {this.state.reviewError &&
 
-                               <Text style={styles.error_text}>{this.state.reviewErrorText}</Text>
+                                    <Text style={styles.error_text}>{this.state.reviewErrorText}</Text>
 
-                               }
-                           </View>
+                                }
+                            </View>
 
-                           <TouchableOpacity style={styles.personal_area_button} onPress={() => {this.sendReviewMessage()}}>
-                               <Text style={[styles.personal_area_button_text, {color: '#ffffff'}]}>
-                                   Отправить
-                               </Text>
-                           </TouchableOpacity>
-                           {/*<TouchableOpacity style={[styles.personal_area_button, {backgroundColor:this.state.pressed2 ? "#D0251D" : '#ffffff'}, {borderWidth:this.state.pressed2 ? 0 : 1}]}   onPress={()=>this.redirectToJobs()}>*/}
-                           {/*    <Text style={[styles.personal_area_button_text, {color:this.state.pressed2 ? "#ffffff" : '#333333'}]}>Работа в Компании</Text>*/}
-                           {/*</TouchableOpacity>*/}
-                           {/*<TouchableOpacity style={[styles.personal_area_button, {backgroundColor:this.state.pressed3 ? "#D0251D" : '#ffffff'}, {borderWidth:this.state.pressed3 ? 0 : 1}]}   onPress={()=>this.changeColor3()} >*/}
-                           {/*    <Text style={[styles.personal_area_button_text, {color:this.state.pressed3 ? "#ffffff" : '#333333'}]}>Сделать обзор</Text>*/}
-                           {/*</TouchableOpacity>*/}
-                           {/*<TouchableOpacity style={[styles.personal_area_button, {backgroundColor:this.state.pressed4 ? "#D0251D" : '#ffffff'}, {borderWidth:this.state.pressed4 ? 0 : 1}]}   onPress={()=>this.changeColor4()}>*/}
-                           {/*    <Text style={[styles.personal_area_button_text, {color:this.state.pressed4 ? "#ffffff" : '#333333'}]}>Больше о Компании</Text>*/}
-                           {/*</TouchableOpacity>*/}
-                       </ScrollView>
-                   </View>
+                            <TouchableOpacity style={styles.personal_area_button} onPress={() => {this.sendReviewMessage()}}>
+                                <Text style={[styles.personal_area_button_text, {color: '#ffffff'}]}>
+                                    Отправить
+                                </Text>
+                            </TouchableOpacity>
+                            {/*<TouchableOpacity style={[styles.personal_area_button, {backgroundColor:this.state.pressed2 ? "#D0251D" : '#ffffff'}, {borderWidth:this.state.pressed2 ? 0 : 1}]}   onPress={()=>this.redirectToJobs()}>*/}
+                            {/*    <Text style={[styles.personal_area_button_text, {color:this.state.pressed2 ? "#ffffff" : '#333333'}]}>Работа в Компании</Text>*/}
+                            {/*</TouchableOpacity>*/}
+                            {/*<TouchableOpacity style={[styles.personal_area_button, {backgroundColor:this.state.pressed3 ? "#D0251D" : '#ffffff'}, {borderWidth:this.state.pressed3 ? 0 : 1}]}   onPress={()=>this.changeColor3()} >*/}
+                            {/*    <Text style={[styles.personal_area_button_text, {color:this.state.pressed3 ? "#ffffff" : '#333333'}]}>Сделать обзор</Text>*/}
+                            {/*</TouchableOpacity>*/}
+                            {/*<TouchableOpacity style={[styles.personal_area_button, {backgroundColor:this.state.pressed4 ? "#D0251D" : '#ffffff'}, {borderWidth:this.state.pressed4 ? 0 : 1}]}   onPress={()=>this.changeColor4()}>*/}
+                            {/*    <Text style={[styles.personal_area_button_text, {color:this.state.pressed4 ? "#ffffff" : '#333333'}]}>Больше о Компании</Text>*/}
+                            {/*</TouchableOpacity>*/}
+                        </ScrollView>
+                    </View>
 
 
 
-               </View>
-           )
+                </View>
+            )
         }
-
-
         // HIGH RATING POPUP
         if (this.state.highRatingPopup)  {
             return (
@@ -2296,8 +1191,6 @@ export default class App extends Component {
                 </View>
             )
         }
-
-
         // marketplacePopup
         if (this.state.marketplacePopup) {
             return (
@@ -2306,10 +1199,10 @@ export default class App extends Component {
                     <View style={styles.marketplace_popup_wrapper}>
                         <View style={styles.choosing_marketplace_header}>
                             <TouchableOpacity style={styles.high_rating_back_btn}
-                              onPress={() => {this.setState({
-                                  marketplacePopup: false,
-                                  highRatingPopup: true,
-                              })}}
+                                              onPress={() => {this.setState({
+                                                  marketplacePopup: false,
+                                                  highRatingPopup: true,
+                                              })}}
                             >
                                 <Svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -2381,7 +1274,6 @@ export default class App extends Component {
                 </View>
             )
         }
-
         // notYetProduct
         if (this.state.notYetProduct ) {
             return (
@@ -2449,7 +1341,6 @@ export default class App extends Component {
                 </View>
             )
         }
-
         // successReviewMessage
         if (this.state.successReviewMessage) {
             return (
@@ -2503,8 +1394,6 @@ export default class App extends Component {
                 </View>
             )
         }
-
-
         // reviewOnlineShopUrlPopup
         if (this.state.reviewOnlineShopUrlPopup) {
             return (
@@ -2555,7 +1444,7 @@ export default class App extends Component {
 
 
                                 {this.state.reviewOnlineShopUrlError &&
-                                <Text style={styles.error_text}>{this.state.reviewOnlineShopUrlErrorText}</Text>
+                                    <Text style={styles.error_text}>{this.state.reviewOnlineShopUrlErrorText}</Text>
                                 }
 
                             </View>
@@ -2571,8 +1460,6 @@ export default class App extends Component {
                 </SafeAreaView>
             )
         }
-
-
         // reviewOnlineShopSuccess
         if (this.state.reviewOnlineShopSuccess) {
             return (
@@ -2636,7 +1523,6 @@ export default class App extends Component {
                 </View>
             )
         }
-
         // makeReviewTypePopup
         if (this.state.makeReviewTypePopup) {
             return (
@@ -2647,12 +1533,12 @@ export default class App extends Component {
 
                         <View style={styles.makeReviewPopup_header}>
                             <TouchableOpacity style={styles.makeReviewPopup_back_btn}
-                                  onPress={() => {
-                                      this.setState({
-                                          marketplacePopup: false,
-                                          highRatingPopup: true,
-                                      })
-                                  }}
+                                              onPress={() => {
+                                                  this.setState({
+                                                      marketplacePopup: false,
+                                                      highRatingPopup: true,
+                                                  })
+                                              }}
                             >
                                 <Svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -2705,9 +1591,6 @@ export default class App extends Component {
                 </SafeAreaView>
             )
         }
-
-
-
         // makeReviewInputPopup
         if (this.state.makeReviewInputPopup) {
             return (
@@ -2755,7 +1638,7 @@ export default class App extends Component {
 
                                 {this.state.makeReviewTypePopupUrlError &&
 
-                                <Text style={styles.error_text}>{this.state.makeReviewTypePopupUrlErrorText}</Text>
+                                    <Text style={styles.error_text}>{this.state.makeReviewTypePopupUrlErrorText}</Text>
                                 }
 
 
@@ -2770,8 +1653,6 @@ export default class App extends Component {
                 </SafeAreaView>
             )
         }
-
-
         // makeReviewSuccessPopup
         if (this.state.makeReviewSuccessPopup) {
             return (
@@ -2841,44 +1722,16 @@ export default class App extends Component {
 
                 <View style={styles.catalog_header}>
                     <Text style={styles.catalog_title}>
-                        Умные часы
+                        {/*Умные часы*/}
+                        {this.state.pagetitle}
                     </Text>
-                    {/*<TouchableOpacity*/}
-                    {/*    style={{}}*/}
-                    {/*    onPress={() => {*/}
-                    {/*        this.props.navigation.navigate('WristWatchCatalogComponent');*/}
-                    {/*    }}*/}
-                    {/*>*/}
-                    {/*    <Text style={styles.catalog_menu_icon_btn_text}>Н.часы</Text>*/}
-                    {/*</TouchableOpacity>*/}
-                    <TouchableOpacity
-                        style={styles.catalog_menu_icon}
-                        onPress={() => {
-                            this.setState({
-                                showFilterModal: true
-                            })
-                        }}
-                    >
-                        {/*<Svg*/}
-                        {/*    xmlns="http://www.w3.org/2000/svg"*/}
-                        {/*    width={30}*/}
-                        {/*    height={18}*/}
-                        {/*    viewBox="0 0 30 18"*/}
-                        {/*    fill="none"*/}
-                        {/*>*/}
-                        {/*    <Path*/}
-                        {/*        d="M30 16.25A1.25 1.25 0 0028.75 15h-7.5a1.25 1.25 0 000 2.5h7.5A1.25 1.25 0 0030 16.25zm0-7.5a1.25 1.25 0 00-1.25-1.25h-17.5a1.25 1.25 0 000 2.5h17.5A1.25 1.25 0 0030 8.75zm0-7.5A1.25 1.25 0 0028.75 0H1.25a1.25 1.25 0 100 2.5h27.5A1.25 1.25 0 0030 1.25z"*/}
-                        {/*        fill="#000"*/}
-                        {/*    />*/}
-                        {/*</Svg>*/}
-                        <Text style={styles.catalog_menu_icon_btn_text}>Фильтр</Text>
-                    </TouchableOpacity>
+
                 </View>
 
 
                 {this.state.catalogItems.length == 0 &&
 
-                        <Text style={{textAlign: 'center',alignSelf: 'center', color: '#000000', fontSize: 22, fontWeight: 'bold'}}>По данному запросу ничего не найденно!</Text>
+                    <Text style={{textAlign: 'center',alignSelf: 'center', color: '#000000', fontSize: 22, fontWeight: 'bold'}}>По данному запросу ничего не найденно!</Text>
                 }
 
                 {this.state.catalogItems.length > 0 &&
@@ -2931,44 +1784,18 @@ export default class App extends Component {
                         columnWrapperStyle={{flex: 1, justifyContent: "space-between"}}
                         keyExtractor={(item, index) => index.toString()}
                     />
-
-
                 }
+
                 <View style={{width: '100%', flexDirection:'row', justifyContent: 'space-between', paddingHorizontal: 20, marginVertical: 20}}>
-                    {this.state.filter_used_or_not && this.state.catalogItems.length > 0 &&
 
                         <TouchableOpacity
-
-                            style={ [ {height: 50, width: '45%', backgroundColor:'#ffffff', borderWidth: 1, borderColor: 'red', borderRadius: 5, flexDirection: 'row',  justifyContent:'center', alignItems: 'center',},  this.state.current_paginate_filter == 1 ? {opacity: 0.5} : {}]}
-                            onPress={() => {this.getPrevFilterData()}}
-                        >
-
-                            <Svg
-                                style={{position: 'relative', left: -5}}
-                                xmlns="http://www.w3.org/2000/svg"
-                                width={25}
-                                height={25}
-                                viewBox="0 0 35 35"
-                                fill="none"
-
-                            >
-                                <Path
-                                    d="M20.169 27.708a1.458 1.458 0 01-1.138-.54l-7.043-8.75a1.458 1.458 0 010-1.851l7.291-8.75a1.46 1.46 0 112.246 1.866L15.006 17.5l6.3 7.817a1.458 1.458 0 01-1.137 2.391z"
-                                    fill="red"
-                                />
-                            </Svg>
-                            <Text style={{fontSize: 20, color: 'red'}}>Назад</Text>
-
-                        </TouchableOpacity>
-                    }
-
-
-                    {!this.state.filter_used_or_not &&
-
-                        <TouchableOpacity
-
                             style={ [ {height: 50, width: '45%', backgroundColor:'#ffffff', borderWidth: 1, borderColor: 'red', borderRadius: 5, flexDirection: 'row',  justifyContent:'center', alignItems: 'center',},  this.state.current_paginate == 1 ? {opacity: 0.5} : {}]}
-                            onPress={() => {this.getPrevCatalogData()}}
+                            onPress={() => {
+                                let {current_paginate, last_page} = this.state;
+                                if (current_paginate > 1) {
+                                    this.getPrevCatalogData()
+                                }
+                            }}
                         >
 
                             <Svg style={{position: 'relative', left: -5}} xmlns="http://www.w3.org/2000/svg" width={25} height={25} viewBox="0 0 35 35" fill="none">
@@ -2981,38 +1808,9 @@ export default class App extends Component {
 
                         </TouchableOpacity>
 
-                    }
 
 
-                    {this.state.filter_used_or_not &&  this.state.hide_next_button === false && this.state.catalogItems.length > 0 &&
 
-                        <TouchableOpacity
-                            style={[{height: 50, width: '45%', backgroundColor:'#ffffff', borderWidth: 1, borderColor: 'red', borderRadius: 5, flexDirection: 'row',  justifyContent:'center', alignItems: 'center'},]}
-                            onPress={() => {this.getNextFilterData()}}
-                        >
-
-                            <Text style={{fontSize: 20, color: 'red'}}>Далее</Text>
-
-                            <Svg
-                                style={{transform:[{rotate:'180deg'}], position: 'relative', right: -5}}
-                                xmlns="http://www.w3.org/2000/svg"
-                                width={25}
-                                height={25}
-                                viewBox="0 0 35 35"
-                                fill="none"
-
-                            >
-                                <Path
-                                    d="M20.169 27.708a1.458 1.458 0 01-1.138-.54l-7.043-8.75a1.458 1.458 0 010-1.851l7.291-8.75a1.46 1.46 0 112.246 1.866L15.006 17.5l6.3 7.817a1.458 1.458 0 01-1.137 2.391z"
-                                    fill="red"
-                                />
-                            </Svg>
-
-                        </TouchableOpacity>
-
-                    }
-
-                    {!this.state.filter_used_or_not &&
 
                         <TouchableOpacity
                             style={{
@@ -3024,17 +1822,17 @@ export default class App extends Component {
                                 borderRadius: 5,
                                 flexDirection: 'row',
                                 justifyContent: 'center',
-                                alignItems: 'center'
-                            }
-
-                            }
+                                alignItems: 'center',
+                                opacity: this.state.current_paginate < this.state.last_page ? {} : 0.5
+                            }}
                             onPress={() => {
-                                this.getNextCatalogData()
+                                let {current_paginate, last_page} = this.state;
+                                console.log(current_paginate, last_page)
+                                if (current_paginate < last_page) {
+                                    this.getNextCatalogData()
+                                }
                             }}
                         >
-
-
-
                             <Text style={{fontSize: 20, color: 'red'}}>Далее</Text>
 
                             <Svg style={{transform: [{rotate: '180deg'}], position: 'relative', right: -5}} xmlns="http://www.w3.org/2000/svg" width={25} height={25} viewBox="0 0 35 35" fill="none">
@@ -3042,7 +1840,6 @@ export default class App extends Component {
                             </Svg>
 
                         </TouchableOpacity>
-                    }
                 </View>
 
                 {/*<View style={styles.footer_wrapper}>*/}
@@ -3153,7 +1950,7 @@ const styles = StyleSheet.create({
     },
     catalog_title: {
         color: "#333333",
-        fontSize: 30,
+        fontSize: 25,
         fontWeight: 'bold',
     },
 
@@ -3201,7 +1998,7 @@ const styles = StyleSheet.create({
         fontWeight: '400',
     },
     catalog_item_info_code: {
-       color: "#545454",
+        color: "#545454",
         fontWeight: '400',
         fontSize: 13,
         marginBottom: 5,
@@ -3213,7 +2010,7 @@ const styles = StyleSheet.create({
     },
 
     catalog_item_info_prices: {
-       flexDirection: "row",
+        flexDirection: "row",
         alignItems: "center",
     },
 
@@ -3255,7 +2052,7 @@ const styles = StyleSheet.create({
 
 
     filter_modal_wrapper: {
-         width: '85%',
+        width: '85%',
         backgroundColor: '#FFFFFF',
         height: '100%',
         paddingTop: 51,
@@ -3279,14 +2076,14 @@ const styles = StyleSheet.create({
     },
 
     filter_modal_close_btn: {
-          position: 'absolute',
-          right: 10,
+        position: 'absolute',
+        right: 10,
 
     },
 
     inputRadio: {
         backgroundColor: "#E4E4E4",
-       paddingHorizontal: 20,
+        paddingHorizontal: 20,
         height: 32,
         borderRadius: 8,
         justifyContent: "center",
@@ -3295,12 +2092,12 @@ const styles = StyleSheet.create({
 
 
     activeInputRadioBorder: {
-       backgroundColor: '#E6524B',
+        backgroundColor: '#E6524B',
     },
 
 
     activeInputRadioColor: {
-       color: '#ffffff',
+        color: '#ffffff',
     },
 
     sort_radio_input_title: {
@@ -3393,8 +2190,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     catalog_menu_icon_btn_text: {
-         fontWeight: 'bold',
-         fontSize: 18,
+        fontWeight: 'bold',
+        fontSize: 18,
         color: '#000000',
     },
     childView: {
@@ -3892,7 +2689,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     ambassador_link_main_wrapper: {
-         flex: 1,
+        flex: 1,
         width: '100%',
         // paddingHorizontal: 26,
     },

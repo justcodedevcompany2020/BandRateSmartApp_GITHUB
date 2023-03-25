@@ -3,7 +3,7 @@ import Svg, { Path, Rect, Circle, Defs, Stop, ClipPath, G } from "react-native-s
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { StatusBar } from 'expo-status-bar';
 import {AuthContext} from "../AuthContext/context";
-
+import {APP_URL} from "../../env";
 import {
     Text,
     Alert,
@@ -91,7 +91,8 @@ export default class App extends Component {
 
 
     backToDashboard= () => {
-        this.props.navigation.navigate("Dashboard");
+        // this.props.navigation.navigate("Dashboard");
+        this.props.navigation.goBack();
 
     }
     registerForPushNotificationsAsync = async () => {
@@ -120,7 +121,7 @@ export default class App extends Component {
         console.log(push_ident, 'push_ident')
 
         try {
-            fetch(`http://37.230.116.113/BandRate-Smart/public/api/register`, {
+            fetch(`${APP_URL}/register`, {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',
@@ -324,18 +325,8 @@ export default class App extends Component {
                 <View style={styles.sign_up_header}>
                     <View style={styles.back_to_dashboard_btn_wrapper}>
                         <TouchableOpacity style={styles.back_to_dashboard_btn}  onPress={() => this.backToDashboard()}>
-                            <Svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width={35}
-                                height={35}
-                                viewBox="0 0 35 35"
-                                fill="none"
-
-                            >
-                                <Path
-                                    d="M20.169 27.708a1.458 1.458 0 01-1.138-.54l-7.043-8.75a1.458 1.458 0 010-1.851l7.291-8.75a1.46 1.46 0 112.246 1.866L15.006 17.5l6.3 7.817a1.458 1.458 0 01-1.137 2.391z"
-                                    fill="#000"
-                                />
+                            <Svg xmlns="http://www.w3.org/2000/svg" width={35} height={35} viewBox="0 0 35 35" fill="none">
+                                <Path d="M20.169 27.708a1.458 1.458 0 01-1.138-.54l-7.043-8.75a1.458 1.458 0 010-1.851l7.291-8.75a1.46 1.46 0 112.246 1.866L15.006 17.5l6.3 7.817a1.458 1.458 0 01-1.137 2.391z" fill="#000"/>
                             </Svg>
                         </TouchableOpacity>
                     </View>

@@ -49,8 +49,11 @@ import NotYetProductComponent from './components/not_yet_product/not_yet_product
 import ChoosingMarketPlaceComponent from './components/choosing_marketplace/choosing_marketplace';
 import ProductSearchComponent from './components/product_search/product_search';
 import InstructionComponent from './components/InstructionComponent';
-import WristWatchCatalogComponent from './components/WristWatchCatalogComponent';
+import WristWatchCatalogComponent from './components/catalog/WristWatchCatalogComponent';
+
 import CatalogCategory from './components/catalog/catalogCategory';
+import CatalogWithoutFilter from './components/catalog/catalogWithoutFilter';
+
 import ThemesCatalogComponent from './components/Themes/ThemesCatalogComponent';
 import ThemeSingleComponent from './components/Themes/ThemeSingleComponent';
 import CheckUserLoginOrNot from './components/Themes/CheckUserLoginOrNot';
@@ -158,14 +161,26 @@ function CatalogCategoryScreen({ navigation }) {
     );
 }
 
+function CatalogWithoutFilterScreen({ route, navigation }) {
+    const {item} = route.params
+
+    // navigation.navigate('ThemesCatalogComponent')
+    // return false
+    return (
+        <CatalogWithoutFilter navigation={navigation} item={item}  />
+    );
+}
+
 
 function JobSinglePageScreen({route, navigation }) {
     const {params, params2} = route.params;
     console.log(route, "params2");
     return (
-        <JobSinglePageComponent  info={params}
-                                 comeFrom={params2}
-                                 navigation={navigation}  />
+        <JobSinglePageComponent
+            info={params}
+            comeFrom={params2}
+            navigation={navigation}
+        />
     );
 }
 
@@ -670,130 +685,137 @@ export default function App() {
                       />
 
                       <Stack.Screen name="Favorites" component={FavoritesScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="Basket" component={BasketScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
 
                       <Stack.Screen name="PersonalArea" component={PersonalAreaScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="Ambassador" component={AmbassadorScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="AmbassadorLink" component={AmbassadorLinkScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
 
 
                       <Stack.Screen name="Jobs" component={JobsScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="JobSinglePage" component={JobSinglePageScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="RatingProduct" component={RatingProductScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="HighRating" component={HighRatingScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="LowRating" component={LowRatingScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="NotYetProduct" component={NotYetProductScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="ChoosingMarketPlace" component={ChoosingMarketPlaceScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="ProductSearch" component={ProductSearchScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
                       <Stack.Screen name="InstructionComponent" component={InstructionComponentScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="WristWatchCatalogComponent" component={WristWatchCatalogComponentScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
+                      />
+
+                      <Stack.Screen name="CatalogWithoutFilter" component={CatalogWithoutFilterScreen}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
                       <Stack.Screen name="ThemesCatalogComponent" component={ThemesCatalogComponentScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="ThemeSingleComponent" component={ThemeSingleComponentScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="CheckUserLoginOrNot" component={CheckUserLoginOrNotScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
 
@@ -810,12 +832,11 @@ export default function App() {
 
                   >
 
-
                       <Stack.Screen name="Dashboard" component={DashboardScreen}
-                                    options={({route}) => ({
-                                        tabBarButton: () => null,
-                                        tabBarStyle: {display: 'none'},
-                                    })}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
                       />
 
                       <Stack.Screen name="SignIn" component={SignInScreen}
@@ -860,6 +881,50 @@ export default function App() {
                                     })}
                       />
 
+
+                    {/*  Общие страницы    */}
+
+                      <Stack.Screen name="CatalogCategory" component={CatalogCategoryScreen}
+                            options={({route}) => ({
+                                tabBarButton: () => null,
+                                tabBarStyle: {display: 'none'},
+                            })}
+                      />
+
+                      <Stack.Screen name="ProductSearch" component={ProductSearchScreen}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
+                      />
+
+                      <Stack.Screen name="Catalog" component={CatalogScreen}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
+                      />
+
+                      <Stack.Screen name="CardProduct" component={CardProductScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
+
+                      <Stack.Screen name="WristWatchCatalogComponent" component={WristWatchCatalogComponentScreen}
+                                options={({route}) => ({
+                                    tabBarButton: () => null,
+                                    tabBarStyle: {display: 'none'},
+                                })}
+                      />
+
+                      <Stack.Screen name="CatalogWithoutFilter" component={CatalogWithoutFilterScreen}
+                                    options={({route}) => ({
+                                        tabBarButton: () => null,
+                                        tabBarStyle: {display: 'none'},
+                                    })}
+                      />
 
                   </Stack.Navigator>
               }

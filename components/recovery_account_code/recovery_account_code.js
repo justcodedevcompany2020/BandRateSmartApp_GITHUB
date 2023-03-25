@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Svg, { Path, Rect, Circle, Defs, Stop, ClipPath, G } from "react-native-svg";
 // import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StatusBar } from 'expo-status-bar';
-
+import {APP_URL} from "../../env";
 
 import {
     Text,
@@ -229,7 +229,7 @@ export default class App extends Component {
         if (code1 && code2 && code3 && code4 && code5 && code6) {
 
             try {
-                fetch(`http://37.230.116.113/BandRate-Smart/public/api/updatcode`, {
+                fetch(`${APP_URL}/updatcode`, {
                     method: 'post',
                     headers: {
                         'Accept': 'application/json',
@@ -353,7 +353,7 @@ export default class App extends Component {
 
     sendCodeAgain = () => {
         try {
-            fetch(`http://37.230.116.113/BandRate-Smart/public/api/resetpassword`, {
+            fetch(`${APP_URL}/resetpassword`, {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',

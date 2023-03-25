@@ -3,7 +3,7 @@
     "scheme": "bandratesmart",
     "name": "BandRateSmart",
     "slug": "BandRateSmart",
-    "version": "10.0.0",
+    "version": "14.0.0",
     "orientation": "portrait",
     "icon": "./assets/android_logotwo.png",
     "userInterfaceStyle": "light",
@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.JustCode.BandRateSmart",
-      "buildNumber": "10.0.0",
+      "buildNumber": "14.0.0",
       "infoPlist": {
         "UIBackgroundModes": [
           "remote-notification"
@@ -34,7 +34,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.JustCode.BandRateSmart",
-      "versionCode": 10,
+      "versionCode": 14,
       "googleServicesFile": "./google-services.json",
       "useNextNotificationsApi": true,
       "permissions": [

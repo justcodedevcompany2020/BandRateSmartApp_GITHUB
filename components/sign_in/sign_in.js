@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import {AuthContext} from "../AuthContext/context";
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-
+import {APP_URL} from '../../env'
 import {
     Text,
     Alert,
@@ -75,11 +75,15 @@ export default class App extends Component {
 
 
     backToDashboard= () => {
-        this.props.navigation.navigate("Dashboard");
+        // this.props.navigation.navigate("Dashboard");
+        this.props.navigation.goBack();
 
     }
     redirectToRecoveryAccountEmail = () => {
         this.props.navigation.navigate("RecoveryAccountEmail");
+    }
+    redirectToSignUp= () => {
+        this.props.navigation.navigate("SignUp");
     }
 
     // redirectToCatalog = () => {
@@ -118,7 +122,7 @@ export default class App extends Component {
         })
 
             try {
-                fetch(`http://37.230.116.113/BandRate-Smart/public/api/login`, {
+                fetch(`${APP_URL}/login`, {
                     method: 'POST',
                     headers: {
 
@@ -388,9 +392,15 @@ export default class App extends Component {
                         <TouchableOpacity style={styles.sign_in_btn} onPress={() => this.signInHandler()}>
                             <Text style={styles.sign_in_btn_text}>Войти</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.forget_password_btn} onPress={() => this.redirectToRecoveryAccountEmail()}>
-                            <Text style={styles.forget_password_btn_text}>Забыли пароль?</Text>
-                        </TouchableOpacity>
+
+                        <View style={{flexDirection:'row', justifyContent:'center'}}>
+                            <TouchableOpacity style={styles.forget_password_btn} onPress={() => this.redirectToRecoveryAccountEmail()}>
+                                <Text style={styles.forget_password_btn_text}>Забыли пароль? </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.forget_password_btn} onPress={() => this.redirectToSignUp()}>
+                                <Text style={styles.forget_password_btn_text}> /  Регистрация</Text>
+                            </TouchableOpacity>
+                        </View>
 
                 </ScrollView>
 

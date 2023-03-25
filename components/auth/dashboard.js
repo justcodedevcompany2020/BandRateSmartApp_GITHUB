@@ -46,6 +46,10 @@ export default class App extends Component {
 
     }
 
+    redirectToCatalogCategory= () => {
+        this.props.navigation.navigate("CatalogCategory");
+    }
+
     render() {
 
         return (
@@ -64,8 +68,8 @@ export default class App extends Component {
                     </View>
 
                     <View style={styles.register_login_buttons_wrapper}>
-                        <TouchableOpacity style={styles.register_btn}  onPress={() => this.redirectToSignUp()}>
-                            <Text style={styles.register_btn_text}>Зарегистрироваться</Text>
+                        <TouchableOpacity style={styles.register_btn}  onPress={() => this.redirectToCatalogCategory()}>
+                            <Text style={styles.register_btn_text}>Каталог</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.login_btn}  onPress={() => this.redirectToSignIn()}>

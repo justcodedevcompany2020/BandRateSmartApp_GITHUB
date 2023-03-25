@@ -3,8 +3,9 @@ import Svg, { Path, Rect, Circle, Defs, Stop, ClipPath, G } from "react-native-s
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { BlurView } from 'expo-blur';
 import { StatusBar } from 'expo-status-bar';
-import AsyncStorage from '@react-native-async-storage/async-storage'
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Footer from '../includes/footer';
+import {APP_URL} from "../../env";
 import {
     Text,
     Alert,
@@ -272,19 +273,18 @@ export default class App extends Component {
 
             sort_by_additional_functions: [],
             catalog_cats:[
-                {name: 'Умные часы', redirect_to: 'Catalog', image: require('../../assets/umnie.jpg') },
-                {name: 'Наручные часы', redirect_to: 'WristWatchCatalogComponent', image: require('../../assets/naruchniechasy.jpg') },
-                {name: 'Алкотестеры', redirect_to: null, image: null },
+                {name: 'Умные часы', redirect_to: 'Catalog', image: require('../../assets/umnie.jpg'), props: false },
+                {name: 'Наручные часы', redirect_to: 'WristWatchCatalogComponent', image: require('../../assets/naruchniechasy.jpg'), props: false },
 
-                {name: 'Видеорегистраторы', redirect_to: null, image: null },
-                {name: 'Беспроводные наушники', redirect_to: null, image: null },
-                {name: 'Пульсометры', redirect_to: null, image: null },
-                {name: 'Увлажнители', redirect_to: null, image: null },
-                {name: 'Электронные термометры', redirect_to: null, image: null },
-                {name: 'Bluetooth гарнитуры', redirect_to: null, image: null },
+                {cat_id: '1205000', name: 'Алкотестеры', redirect_to: 'CatalogWithoutFilter', image: require('../../assets/алкотестер.jpg'), props: true },
+                {cat_id: '1219000', name: 'Видеорегистраторы', redirect_to: 'CatalogWithoutFilter', image: require('../../assets/видеорегистратор.jpg'), props: true },
+                {cat_id: '12000001', name: 'Беспроводные наушники', redirect_to: 'CatalogWithoutFilter', image: require('../../assets/наушнники.jpg'), props: true },
+                {cat_id: '1205500', name: 'Пульсометры', redirect_to: 'CatalogWithoutFilter', image: require('../../assets/пульсометр.jpg'), props: true },
+                {cat_id: '1224500',name: 'Увлажнители', redirect_to: 'CatalogWithoutFilter', image: require('../../assets/увлажнитель.jpg'), props: true },
+                {cat_id: '1256500',name: 'Электронные термометры', redirect_to: 'CatalogWithoutFilter', image: require('../../assets/термометр.jpg'), props: true },
+                {cat_id: '1202000',name: 'Bluetooth гарнитуры', redirect_to: 'CatalogWithoutFilter', image: require('../../assets/bluetooth-гарнитура.jpg'), props: true },
             ]
         };
-
 
         this.Star = require('../../assets/images/star_rating_image.png');
         this.Star_With_Border = require('../../assets/images/star_not_rating_img.png');
@@ -296,13 +296,11 @@ export default class App extends Component {
         console.log(key)
         this.setState({ Default_Rating: key });
 
-
         let userToken = await AsyncStorage.getItem('userToken');
         let AuthStr = 'Bearer ' + userToken;
 
-
         fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/estimates',
+            `${APP_URL}/estimates`,
             {
                 method: "POST",
                 headers: {
@@ -402,7 +400,7 @@ export default class App extends Component {
         let AuthStr = 'Bearer ' + userToken;
 
         fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/allFavoritProductcount',
+            `${APP_URL}/allFavoritProductcount`,
             {
                 method: "GET",
                 headers: {
@@ -436,624 +434,42 @@ export default class App extends Component {
             })
     }
 
-    sendReview = () => {
-        this.setState({ pressed: true, pressed2: false, pressed3: false, pressed4: false});
-    }
-
-    getCatalogData = async () => {
-        // AsyncStorage.removeItem('haveAlreadyShownStarPopup');
-
-        let userToken = await AsyncStorage.getItem('userToken');
-        let haveAlreadyShownStarPopup = await AsyncStorage.getItem('haveAlreadyShownStarPopup');
-        let AuthStr = 'Bearer ' + userToken;
-
-        // console.log(userToken, "token");
-        let current_paginate = this.state.current_paginate;
-
-        fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/CatalogProduct?page='+current_paginate,
-            {
-                method: "GET",
-                headers: {
-                    'Authorization': AuthStr,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-            }
-        ).then((response) => response.json())
-            .catch((error) => {
-                console.log("ERROR " , error)
-
-            })
-            .then((response) => {
-
-                //
-                // console.log(response)
-                //
-                console.log(response, 'list');
 
 
-                this.setState({
-                    catalogItems: response.data.products.data,
-                    loaded: true,
-                    ratingPopup: haveAlreadyShownStarPopup ? false : true,
-                })
-
-
-
-
-
-            })
-
-    }
-
-    findInArray = (array, find) => {
-
-
-        // Provided testing method (return element > 4).
-        console.log(array.includes(find), 'dwdwdwdwdw')
-        return array.includes(find)
-
-    }
-
-    removeFromArray = (array, find) => {
-
-        const index = array.indexOf(find);
-        if (index > -1) { // only splice array when item is found
-            array.splice(index, 1); // 2nd parameter means remove one item only
-        }
-
-        return array;
-
-    }
-
-    componentDidMount() {
-        const { navigation } = this.props;
-
-
-        // AsyncStorage.clear();
-        // let url = Linking.useURL();
-        // alert(url)
-        // if (url)
-        // {
-        //     url = url.split('//');
-        //     url = url.length == 2 ? url[1] : null
-        //     console.log(url)
-        // }
-
-        // console.log(Linking.getInitialURL())
-
-        // if (Platform.OS === 'android') {
-        //     Linking.getInitialURL().then(url => {
-        //
-        //         alert(url, 'android url');
-        //
-        //         // this.navigate(url);
-        //     });
-        // } else {
-        //     Linking.addEventListener('url', this.handleOpenURL);
-        // }
-
-
-        // AsyncStorage.clear();
-
-        this.checkBasketCount();
-        this.checkFavouritesProductsCount();
-
-        this.focusListener = navigation.addListener("focus", () => {
-
-            this.checkBasketCount();
-            this.checkFavouritesProductsCount();
-
-        });
-    }
-    componentWillUnmount() {
-        // Remove the event listener
-        if (this.focusListener) {
-            this.focusListener();
-            // console.log('Bum END')
-        }
-
-        // Linking.remove('url', this.handleOpenURL);
-
-
-    }
-
-    // handleOpenURL = (event) => { // D
-    //     this.navigate(event.url);
+    // checkAuthUser = async () => {
+    //     let userToken = await AsyncStorage.getItem('userToken');
+    //     console.log( userToken, 'userToken')
+    //     return userToken !== null ? true : false;
     // }
-    // navigate = (url) => { // E
-    //
-    //     console.log(url, 'navigatenavigate')
-    //
-    //     // const { navigate } = this.props.navigation;
-    //     // const route = url.replace(/.*?:\/\//g, '');
-    //     // const id = route.match(/\/([^\/]+)\/?$/)[1];
-    //     // const routeName = route.split('/')[0];
-    //
-    //     // console.log(routeName, 'routeName')
-    //
-    //     url = url.split('//');
-    //     const routeName = url.length == 2 ? url[1] : null;
-    //
-    //     console.log(routeName, 'routeName')
-    //
-    //     if (routeName === 'records') {
-    //         alert('vjhfjf')
-    //         this.props.navigation.navigate('ThemesCatalogComponent')
-    //     };
+
+    // initFunction = async () =>
+    // {
+    //    let auth = await this.checkAuthUser();
+    //    if(auth)
+    //    {
+    //        this.checkBasketCount();
+    //        this.checkFavouritesProductsCount();
+    //    }
+    // }
+
+    // componentDidMount() {
+    //     AsyncStorage.clear()
+    //     const { navigation } = this.props;
+    //     // this.initFunction();
+    //     this.focusListener = navigation.addListener("focus", () =>
+    //     {
+    //         // this.initFunction();
+    //     });
+    // }
+    // componentWillUnmount() {
+    //     // Remove the event listener
+    //     if (this.focusListener) {
+    //         this.focusListener();
+    //     }
     // }
 
 
-    checkBasketCount = async () => {
 
-        let userToken = await AsyncStorage.getItem('userToken');
-        let AuthStr = 'Bearer ' + userToken;
-
-        fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/ProductBasketCount',
-            {
-                method: "GET",
-                headers: {
-                    'Authorization': AuthStr,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-            }
-        ).then((response) => response.json())
-            .catch((error) => {
-                console.log("ERROR " , error)
-            })
-            .then((response) => {
-
-                // console.log(response, "product_count_ggggg");
-
-                if (response.hasOwnProperty("status")) {
-                    if (response.status === true) {
-                        if (response.data.hasOwnProperty('ProductBasketCount')) {
-                            let count_number = response.data.ProductBasketCount;
-
-                            this.setState({
-                                show_basket_count: count_number > 0 ? true : false,
-                                basket_count: count_number,
-
-                            })
-                        }
-                    }
-                }
-
-            })
-
-    }
-
-
-    redirectToCardProduct = (item) => {
-        this.props.navigation.navigate("CardProduct", {
-            params: JSON.stringify(item)
-        });
-    }
-
-
-    redirectToFavorites = () => {
-        this.props.navigation.navigate("Favorites");
-    }
-
-    redirectToBasket = () => {
-        this.props.navigation.navigate("Basket");
-    }
-
-    redirectToPersonalArea = () => {
-        this.props.navigation.navigate("PersonalArea");
-    }
-
-    redirectToProductSearch = () => {
-        this.props.navigation.navigate("ProductSearch");
-    }
-
-
-    redirectToAmbassador = () => {
-        this.setState({ pressed: true, pressed2: false, pressed3: false, pressed4: false, pressed5: false,});
-        this.props.navigation.navigate("Ambassador", {
-            params: 'from_catalog',
-        });
-
-    }
-
-
-
-    redirectToChoosingMarketPlace (){
-        // this.props.navigation.navigate("ChoosingMarketPlace");
-        this.setState({ pressed: false, pressed2: true, pressed3: false, pressed4: false, pressed5: false,});
-    }
-
-
-    changeColor3  = () => {
-
-        this.setState({
-            pressed: false,
-            pressed2: false,
-            pressed3: true,
-            pressed4: false,
-            makeReviewTypePopup: true,
-            reviewOnlineShopUrlPopup: false,
-            marketplacePopup: false,
-            highRatingPopup: false,
-            lowRatingPopup: false,
-            ratingPopup: false,
-            showFilterModal: false,
-            notYetProduct: false,
-            successReviewMessage: false,
-            makeReviewInputPopup: false,
-            makeReviewSuccessPopup: false,
-        });
-    }
-
-    redirectToJobs = () => {
-        this.setState({ pressed: false, pressed2: false, pressed3: false, pressed4: true, pressed5: false,});
-        this.props.navigation.navigate("Jobs", {
-            params: "from_catalog",
-        });
-    }
-
-
-    redirectToInstruction = () => {
-        this.props.navigation.navigate("InstructionComponent", {
-            params: 'from_catalog',
-        });
-    }
-
-    changeColor2 = () => {
-        this.setState({
-            pressed: false,
-            pressed2: true,
-            pressed3: false,
-            pressed4: false,
-            marketplacePopup: true,
-            highRatingPopup: false,
-            lowRatingPopup: false,
-            ratingPopup: false,
-            showFilterModal: false,
-            notYetProduct: false,
-            successReviewMessage: false,
-            reviewOnlineShopUrlPopup: false,
-            reviewOnlineShopSuccess: false,
-            makeReviewTypePopup: false,
-            makeReviewInputPopup: false,
-            makeReviewSuccessPopup: false,
-
-
-        });
-    }
-
-    sendReviewMessage = async () => {
-
-
-        let userToken = await AsyncStorage.getItem('userToken');
-        let AuthStr = 'Bearer ' + userToken;
-
-        let reviewText = this.state.review;
-
-        fetch(
-            'http://37.230.116.113/BandRate-Smart/public/api/estimatesMessage',
-            {
-                method: "POST",
-                headers: {
-                    'Authorization': AuthStr,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    message: reviewText
-                })
-            }
-        ).then((response) => response.json())
-            .catch((error) => {
-                console.log("ERROR " , error)
-
-            })
-            .then((response) => {
-
-
-                console.log(response, "rating")
-
-
-                if (response.hasOwnProperty("status")) {
-                     if (response.status === true) {
-                         this.setState({
-                             successReviewMessage: true,
-                             lowRatingPopup: false,
-                             ratingPopup: false,
-                             showFilterModal: false,
-                             highRatingPopup: false,
-                             marketplacePopup: false,
-                             notYetProduct: false,
-                             reviewOnlineShopUrlPopup: false,
-                             reviewOnlineShopSuccess: false,
-                             makeReviewTypePopup: false,
-                             makeReviewInputPopup: false,
-                             makeReviewSuccessPopup: false,
-                             reviewError: false,
-                             reviewErrorText: '',
-
-                         })
-
-                     }  else {
-
-                         this.setState({
-                             reviewError: true,
-                             reviewErrorText: 'Поле обязательно для заполнения!',
-                         })
-                     }
-                }
-
-
-
-
-
-            })
-    }
-
-
-
-
-
-    takeUrlType = (urlType) => {
-         this.setState({
-             reviewOnlineShopUrlType: urlType,
-             reviewOnlineShopUrlPopup: true,
-
-             marketplacePopup: false,
-             highRatingPopup: false,
-             lowRatingPopup: false,
-             ratingPopup: false,
-             showFilterModal: false,
-             notYetProduct: false,
-             successReviewMessage: false,
-             reviewOnlineShopSuccess: false,
-             makeReviewTypePopup: false,
-             makeReviewInputPopup: false,
-             makeReviewSuccessPopup: false,
-         })
-    }
-
-    sendReviewOnlineShopUrl = async () => {
-        let userToken = await AsyncStorage.getItem('userToken');
-        let AuthStr = 'Bearer ' + userToken;
-
-        let url    = this.state.reviewOnlineShopUrl;
-        let url_type = this.state.reviewOnlineShopUrlType;
-
-         if (url == "") {
-               this.setState({
-                   reviewOnlineShopUrlError: true,
-                   reviewOnlineShopUrlErrorText: "Поле обязательно!",
-               })
-         } else {
-             this.setState({
-                 reviewOnlineShopUrlError: false,
-                 reviewOnlineShopUrlErrorText: "",
-             })
-             fetch(
-                 'http://37.230.116.113/BandRate-Smart/public/api/createBonusComment',
-                 {
-                     method: "POST",
-                     headers: {
-                         'Authorization': AuthStr,
-                         'Accept': 'application/json',
-                         'Content-Type': 'application/json',
-                     },
-                     body: JSON.stringify({
-                         url: url,
-                         url_type: url_type,
-                     })
-                 }
-             ).then((response) => response.json())
-                 .catch((error) => {
-                     console.log("ERROR " , error)
-
-                 })
-                 .then((response) => {
-                     console.log(response, 'link')
-
-
-
-
-                     if (response.hasOwnProperty("status")) {
-                         if (response.status === true) {
-                             if (response.data.message === true) {
-                                 this.setState({
-                                     reviewOnlineShopSuccess: true,
-                                     reviewOnlineShopUrlPopup: false,
-                                     marketplacePopup: false,
-                                     highRatingPopup: false,
-                                     lowRatingPopup: false,
-                                     ratingPopup: false,
-                                     showFilterModal: false,
-                                     notYetProduct: false,
-                                     successReviewMessage: false,
-                                     makeReviewTypePopup: false,
-                                     makeReviewInputPopup: false,
-                                     makeReviewSuccessPopup: false,
-                                 })
-                             }
-
-                             if (response.data.message == "Have you sent") {
-                                 this.setState({
-                                     reviewOnlineShopUrlError: true,
-                                     reviewOnlineShopUrlErrorText: 'На данный момент у вас уже есть ссылка на модерации!'
-
-                                 })
-                             }
-                         } else {
-                             if (response.data.message === "url_type not url") {
-                                 this.setState({
-                                     reviewOnlineShopUrlError: true,
-                                     reviewOnlineShopUrlErrorText: 'Не верный формат, ведите коректную ссылку!'
-                                 })
-                             }
-                         }
-
-
-
-                     }
-
-
-
-                 })
-
-
-         }
-
-
-
-
-    }
-
-
-    openReviewLinkTypePopup = (linkType) => {
-        let placeholder = "";
-        if (linkType == "vk") {
-            placeholder = "https://vk.com/BrandRateSmart";
-        }
-        if (linkType == "instagram") {
-            placeholder = "https://instagram.com/";
-        }
-
-        if (linkType == "youtube") {
-            placeholder = "https://www.youtube.com/" ;
-        }
-
-        if (linkType == "other") {
-            placeholder = "Other link" ;
-        }
-
-        this.setState({
-            makeReviewInputPopup: true,
-            makeReviewTypePopup: false,
-
-            reviewOnlineShopSuccess: false,
-            reviewOnlineShopUrlPopup: false,
-            marketplacePopup: false,
-            highRatingPopup: false,
-            lowRatingPopup: false,
-            ratingPopup: false,
-            showFilterModal: false,
-            notYetProduct: false,
-            successReviewMessage: false,
-            makeReviewSuccessPopup: false,
-            makeReviewTypePopupUrlPlaceholder: placeholder,
-            makeReviewTypePopupUrlType: linkType,
-        })
-    }
-
-
-
-
-    createOverview = async () => {
-        let userToken = await AsyncStorage.getItem('userToken');
-        let AuthStr = 'Bearer ' + userToken;
-
-        let link = this.state.makeReviewTypePopupUrl;
-        let url_type = this.state.makeReviewTypePopupUrlType;
-
-        if (link == "") {
-            this.setState({
-                makeReviewTypePopupUrlError: true,
-                makeReviewTypePopupUrlErrorText: 'Поле обязательно!'
-            })
-        } else {
-            this.setState({
-                makeReviewTypePopupUrlError: false,
-                makeReviewTypePopupUrlErrorText: ''
-            })
-            fetch(
-                'http://37.230.116.113/BandRate-Smart/public/api/createOverview',
-                {
-                    method: "POST",
-                    headers: {
-                        'Authorization': AuthStr,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        url: link,
-                        url_type: url_type,
-                    })
-                }
-            ).then((response) => response.json())
-                .catch((error) => {
-                    console.log("ERROR " , error)
-
-                })
-                .then((response) => {
-                    console.log(response, 'link')
-
-                    if (response.hasOwnProperty("status")) {
-                            if (response.status === true) {
-                                if (response.data.message === true) {
-                                    this.setState({
-                                        makeReviewTypePopupUrlError: false,
-                                        makeReviewTypePopupUrlErrorText: '',
-                                        makeReviewSuccessPopup: true,
-
-                                        makeReviewInputPopup: false,
-                                        makeReviewTypePopup: false,
-                                        reviewOnlineShopSuccess: false,
-                                        reviewOnlineShopUrlPopup: false,
-                                        marketplacePopup: false,
-                                        highRatingPopup: false,
-                                        lowRatingPopup: false,
-                                        ratingPopup: false,
-                                        showFilterModal: false,
-                                        notYetProduct: false,
-                                        successReviewMessage: false,
-                                    })
-                                }
-
-                                if (response.data.message == "Have you sent") {
-                                    this.setState({
-                                        makeReviewTypePopupUrlError: true,
-                                        makeReviewTypePopupUrlErrorText: 'На данный момент у вас уже есть ссылка на модерации!'
-                                    })
-                                }
-                            } else {
-                                if (response.data.message === "url_type not url") {
-                                    this.setState({
-                                        makeReviewTypePopupUrlError: true,
-                                        makeReviewTypePopupUrlErrorText: 'Не верный формат, ведите коректную ссылку!'
-                                    })
-                                }
-                            }
-
-
-
-                    }
-
-
-                })
-        }
-
-
-
-    }
-
-
-    openCatalog = () => {
-        this.setState({
-            makeReviewInputPopup: false,
-            makeReviewTypePopup: false,
-            reviewOnlineShopSuccess: false,
-            reviewOnlineShopUrlPopup: false,
-            marketplacePopup: false,
-            highRatingPopup: false,
-            lowRatingPopup: false,
-            ratingPopup: false,
-            showFilterModal: false,
-            notYetProduct: false,
-            successReviewMessage: false,
-            makeReviewSuccessPopup: false,
-        })
-    }
 
 
     render() {
@@ -1080,9 +496,6 @@ export default class App extends Component {
             );
         }
 
-
-
-
        // RATING POPUP
        if (this.state.ratingPopup) {
             return (
@@ -1092,6 +505,7 @@ export default class App extends Component {
                         <Text style={styles.rating_main_title}>Оцените покупку</Text>
 
                         <ScrollView style={styles.rating_page_main}>
+
                             {/*<View style={styles.rating_product_img_info_main_wrapper}>*/}
                             {/*    <View style={styles.rating_product_image_wrapper}>*/}
                             {/*        <Image style={styles.rating_product_image} source={require('../../assets/images/rating_img.png')} />*/}
@@ -1116,72 +530,44 @@ export default class App extends Component {
        }
 
 
-       // FILTER POPUP
-
-
-        // LOW RATING POPUP
-
-        // HIGH RATING POPUP
-
-
-        // marketplacePopup
-
-
-        // notYetProduct
-
-
-        // successReviewMessage
-
-
-        // reviewOnlineShopUrlPopup
-
-
-        // reviewOnlineShopSuccess
-
-        // makeReviewTypePopup
-
-
-
-        // makeReviewInputPopup
-
-        // makeReviewSuccessPopup
-
-
         return (
             <SafeAreaView style={styles.container} >
                 <StatusBar style="dark" />
-
 
                 <View style={styles.catalog_header}>
                     <Text style={styles.catalog_title}>Каталог</Text>
                 </View>
 
-
                 <ScrollView style={[styles.catalog_items_main_wrapper, {backgroundColor:'white', paddingBottom: 15}]}>
 
-
                     {this.state.catalog_cats.map((item, index) => {
-                        return (
 
+                        return (
                             <TouchableOpacity
                                 key={index}
-                                style={{width: '100%', height: 150, borderRadius: 20, borderColor:'silver', borderWidth:1, marginBottom: 25, padding: 15, flexDirection:'row', justifyContent:'center', alignItems:'center'}}
+                                style={{width: '100%', height: 150, borderRadius: 20, borderColor:'silver', borderWidth:1, marginBottom: 25, padding: 15, flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}
                                 onPress={() => {
                                     if(item.redirect_to)
                                     {
-                                        this.props.navigation.navigate(item.redirect_to)
+                                        if (item.props) {
+                                            this.props.navigation.navigate(item.redirect_to, {
+                                                item: item
+                                            })
+                                        } else {
+                                            this.props.navigation.navigate(item.redirect_to)
+                                        }
                                     }
                                 }}
                             >
 
-                                <Text style={{fontSize: 18, fontWeight:'bold'}}>
+                                <Text style={{fontSize: 18, fontWeight:'bold', flex:1}}>
                                     {item.name}
                                 </Text>
 
-                                <View style={{flex:1, height: '100%', flexDirection:'row', justifyContent:'center'}}>
+                                <View style={{width: '50%', height: '100%', flexDirection:'row', justifyContent:'center'}}>
 
                                     {item.image &&
-                                        <Image style={{width: 100, height: '100%'}} source={item.image}/>
+                                        <Image style={{width: 100, height: '100%', resizeMode:'contain'}} source={item.image}/>
                                     }
                                 </View>
 
@@ -1192,98 +578,9 @@ export default class App extends Component {
                     })}
 
 
-
-
                 </ScrollView>
 
-
-                <View style={styles.footer_wrapper}>
-
-                    <TouchableOpacity style={[styles.footer_page_btn, {flexDirection: 'row', position: "relative",}]} onPress={() => this.redirectToFavorites()}>
-                        <Svg xmlns="http://www.w3.org/2000/svg" width={28} height={26} viewBox="0 0 28 26" fill="none">
-                            <Path d="M7.75 1.75c-3.451 0-6.25 2.77-6.25 6.188 0 2.758 1.094 9.306 11.86 15.925a1.232 1.232 0 001.28 0C25.406 17.242 26.5 10.696 26.5 7.938c0-3.418-2.799-6.188-6.25-6.188S14 5.5 14 5.5s-2.799-3.75-6.25-3.75z" stroke="#333" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"/>
-                        </Svg>
-
-                        {this.state.show_favourites_products_count &&
-                        <View style={{position: "absolute", right: -20, top: -10, borderRadius: 100, width: 20, height: 20, justifyContent: 'center', alignItems: 'center', backgroundColor: '#D0251D'}}>
-                            <Text style={{color: "#ffffff", fontWeight: 'bold', fontSize: 12}}>{this.state.favourites_products_count}</Text>
-                        </View>
-                        }
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.footer_page_btn} onPress={() => this.redirectToProductSearch()}>
-                        <Svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width={28}
-                            height={30}
-                            viewBox="0 0 28 30"
-                            fill="none"
-                        >
-                            <Path
-                                d="M15.16 24.268h9.108a1.867 1.867 0 001.867-1.867V3.734a1.867 1.867 0 00-1.867-1.867H5.598a1.867 1.867 0 00-1.866 1.867v7.946a8.403 8.403 0 00-1.867.936V3.734A3.734 3.734 0 015.6 0h18.668A3.734 3.734 0 0128 3.734V22.4a3.734 3.734 0 01-3.733 3.734h-7.242l-1.866-1.867h.002zM8.869 9.334a1.4 1.4 0 100-2.8 1.4 1.4 0 000 2.8zm4.198-.934a.933.933 0 01.933-.933h7.467a.934.934 0 010 1.867H14a.934.934 0 01-.933-.934zm0 5.6a.933.933 0 01.933-.933h7.467a.933.933 0 010 1.867H14a.934.934 0 01-.933-.933zm8.4 6.534H14.88c.07-.62.07-1.246 0-1.866h6.588a.933.933 0 110 1.866h-.002zM.717 16.624a6.533 6.533 0 009.736 8.204l4.747 4.775a.934.934 0 101.32-1.322l-4.76-4.76A6.533 6.533 0 10.715 16.623h.001zm9.696.384A4.667 4.667 0 112.7 22.265a4.667 4.667 0 017.714-5.257z"
-                                fill="#333"
-                            />
-                        </Svg>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={[styles.footer_page_btn, {positon: "relative", bottom: 8}]}>
-                        <Svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width={44}
-                            height={42}
-                            viewBox="0 0 44 42"
-                            fill="none"
-                        >
-                            <Path
-                                d="M22.495 2.638l17.884 17.884H38.1v19.1a.7.7 0 01-.7.7h-9.5v-15.4H16.1v15.4H6.6a.7.7 0 01-.7-.7v-19.1H3.621L21.505 2.638a.7.7 0 01.99 0z"
-                                stroke="#D0251D"
-                                strokeWidth={3}
-                            />
-                        </Svg>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={[styles.footer_page_btn, {flexDirection: 'row', position: "relative",}]} onPress={() => this.redirectToBasket()}>
-                        <View style={styles.footer_basket_icon}>
-                            <Svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width={33}
-                                height={29}
-                                viewBox="0 0 33 29"
-                                fill="none"
-                            >
-                                <Path
-                                    d="M29.282 16.843h0a.372.372 0 01-.366.282H10.893l.249 1.203.375 1.812.165.797h16.192c.255 0 .415.227.367.437l-.317 1.375-.179.78.721.346a2.17 2.17 0 011.242 1.953c0 1.189-.978 2.172-2.208 2.172-1.23 0-2.208-.983-2.208-2.172 0-.604.25-1.15.66-1.547l1.773-1.718h-16.95l1.774 1.718c.41.397.66.943.66 1.547C13.208 27.017 12.23 28 11 28s-2.208-.983-2.208-2.172c0-.798.439-1.502 1.106-1.881l.632-.36-.147-.712L6.358 3.422l-.165-.797H1.375A.367.367 0 011 2.265V1.36C1 1.172 1.157 1 1.375 1h5.874c.187 0 .335.129.368.29h0l.525 2.538.165.797h23.317c.255 0 .415.227.367.437l-2.709 11.78z"
-                                    stroke="#333"
-                                    strokeWidth={2}
-                                />
-                            </Svg>
-                        </View>
-                        {this.state.show_basket_count &&
-                        <View style={{position: "absolute", right: -20, top: -10, borderRadius: 100, width: 20, height: 20, justifyContent: 'center', alignItems: 'center', backgroundColor: '#D0251D'}}>
-                            <Text style={{color: "#ffffff", fontWeight: 'bold', fontSize: 12}}>{this.state.basket_count}</Text>
-                        </View>
-                        }
-
-
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.footer_page_btn} onPress={() => this.redirectToPersonalArea()}>
-                        <Svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width={30}
-                            height={30}
-                            viewBox="0 0 496 496"
-                            fill="none"
-
-                        >
-                            <Path
-                                d="M248 96c-53 0-96 43-96 96s43 96 96 96 96-43 96-96-43-96-96-96zm0 144c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm0-240C111 0 0 111 0 248s111 248 248 248 248-111 248-248S385 0 248 0zm0 448c-49.7 0-95.1-18.3-130.1-48.4 14.9-23 40.4-38.6 69.6-39.5 20.8 6.4 40.6 9.6 60.5 9.6s39.7-3.1 60.5-9.6c29.2 1 54.7 16.5 69.6 39.5-35 30.1-80.4 48.4-130.1 48.4zm162.7-84.1c-24.4-31.4-62.1-51.9-105.1-51.9-10.2 0-26 9.6-57.6 9.6-31.5 0-47.4-9.6-57.6-9.6-42.9 0-80.6 20.5-105.1 51.9C61.9 331.2 48 291.2 48 248c0-110.3 89.7-200 200-200s200 89.7 200 200c0 43.2-13.9 83.2-37.3 115.9z"
-                                fill="#333"
-                            />
-                        </Svg>
-                    </TouchableOpacity>
-
-                </View>
-
+                <Footer navigation={this.props.navigation} page={'catalog_category'}/>
 
             </SafeAreaView>
 
